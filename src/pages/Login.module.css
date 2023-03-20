@@ -1,0 +1,103 @@
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgb(236, 236, 236);
+}
+
+.login {
+    width: 50%;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: white;
+}
+
+.login a {
+   text-decoration: none;
+   color: #2c3e50;
+   font-weight: bold;
+}
+
+.login p {
+    text-align: center;
+ }
+
+.login>h3 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: auto;
+}
+
+.input-group.invalid>label{
+    color: #e74c3c;
+}
+
+.input-group.invalid>input{
+    background-color: #f7b9b3;
+}
+
+.input-group>label {
+    color:#2c3e50;
+    margin-left: 5px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.input-group>input {
+    background-color: #ecf0f1;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+}
+
+.button-group>button {
+    background-color: #bdc3c7;
+    color: black;
+    border-radius: 20px;
+    padding: 10px 20px;
+    border: none;
+    font-size: 1.1rem;
+}
+
+.button-group>button.btn-login {
+   color: white !important;
+   background-color: #2980b9;
+}
+
+.button-group>button.btn-login:hover {
+    background-color: #3a9ada;
+    cursor: pointer;
+ }
+
+.mt {
+    margin-top: 1rem;
+}
+
+.wrongCreds {
+    color: red;
+    text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+    .login {
+        width: 90%;
+        
+    }
+
+    .input-group {
+        width: 95%;  
+    }
+}

@@ -1,0 +1,14 @@
+.outlet {
+    padding: 15px;
+    transition: 0.5s;
+}
+
+.outlet.open {
+    margin-left: 250px;
+}
+
+@media only screen and (max-width: 600px) {
+    .outlet.open {
+        margin-left: 0px;
+    }
+}

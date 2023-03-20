@@ -1,0 +1,37 @@
+.top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 0px;
+    background-color: #34495e;
+    color: white;
+    margin-left: 0px;
+    border-bottom: 1px solid #1d2a36;
+    height: 55px;
+    transition: 0.5s;
+}
+
+.top-nav.open {
+    margin-left: 250px;  
+}
+
+.top-nav>div:nth-of-type(1) {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.top-nav>div:nth-of-type(1):hover {
+    background-color: #3e5770;
+    cursor: pointer;
+}
+
+.timer {
+    padding-right: 10px;
+}
+
+@media only screen and (max-width: 600px) {
+    .top-nav.open {
+        margin-left: 0px;  
+    }
+}
