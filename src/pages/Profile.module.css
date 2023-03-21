@@ -1,0 +1,51 @@
+.profile {
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 1px rgba(0,0,0,.125),0 1px 3px rgba(0,0,0,.2);
+    border-radius: 4px;
+    width: 70%;
+}
+
+.profile h3 {
+    margin-top: 0;
+}
+
+.profile table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.profile table tr td:first-of-type {
+    background-color: rgb(247, 247, 247);
+    border: 2px solid rgb(235, 235, 235);
+    padding: 15px 10px;
+    font-weight: 600;
+}
+
+.profile table tr td:last-of-type {
+    background-color: rgb(255, 255, 255);
+    border: 2px solid rgb(235, 235, 235);
+    padding: 10px;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 30px;
+}
+
+.profile a {
+    background-color: #f39c12;
+    color: white;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    text-decoration: none;
+}
+
+.profile a:hover {
+    background-color: #f8ae36;
+    cursor: pointer;
+}

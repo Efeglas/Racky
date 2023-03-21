@@ -18,14 +18,14 @@ const Root = () => {
     const { pathname } = useLocation();
     const [sideNavOpen, setSideNavOpen] = useState(false);
 
-    const resetTimer = useCallback(() =>{
+    const resetTimer = () =>{
       //setSeconds(defaultTimerValue);
-    })
+    }
 
-    const sideNavToggleHandler = useCallback(() => {
+    const sideNavToggleHandler = () => {
       setSideNavOpen(!sideNavOpen);
       resetTimer();
-    })
+    }
 
 
     let outletClass = style.outlet;

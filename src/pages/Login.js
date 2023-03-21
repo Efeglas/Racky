@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import style from './Login.module.css';
 import useInput from '../hooks/use-Input';
-import { Navigate, redirect, useNavigate } from 'react-router-dom';
+import { Navigate, redirect, useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
 
     const token = localStorage.getItem("token");
+    //let ownPw = true;
+    const navigate = useNavigate();
 
     const [wrongUsername, setWrongUsername] = useState(false);
     const [wrongMessage, setWrongMessage] = useState(false);
@@ -26,7 +28,7 @@ const Login = () => {
         changeHandler: pwdChangeHandler,
         blurHandler: pwdBlurHandler,
         reset: pwdReset,
-    } = useInput(value => {return value.trim() !== "" || value.trim().lenght > 7});
+    } = useInput(value => {return value.trim() !== "" && value.trim().length > 7});
 
     const submitHandlerLogin = async (event) => {
         event.preventDefault();     
@@ -60,8 +62,12 @@ const Login = () => {
             pwdReset();
 
             if (!json.data.ownPw) {
+                //ownPw = false;
                 console.log("SET NEW PASS");
+                navigate("/password?notOwn=true");
+                //return <Navigate to='/password' />
             } 
+            
         } else {
             setWrongMessage(json.message);
             setWrongUsername(true);         
@@ -70,6 +76,8 @@ const Login = () => {
 
     const inputUsernameClass = usernameHasError ? style.invalid : "";
     const inputPasswdClass = pwdHasError ? style.invalid : "";
+
+    
 
     if (token !== null) {
         return <Navigate to='/' />
@@ -92,8 +100,8 @@ const Login = () => {
                 <div className={`${style["button-group"]} ${style.mt}`}>
                     <button className={style["btn-login"]}>Log in</button>
                 </div>
-                <p><a href='https://www.youtube.com/'>Forget password?</a></p>
-                <p>Don't have an account? <a href='https://www.youtube.com/'>Register</a></p>
+                <p><Link to='/userInfo'>Forget password?</Link></p>
+                <p>Don't have an account? <Link to='/userInfo'>Register</Link></p>
             </form>
         </div>
     );

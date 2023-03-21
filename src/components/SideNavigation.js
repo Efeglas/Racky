@@ -23,10 +23,18 @@ const SideNavigation = (props) => {
                 <Icon size='20' icon='xmark'/>
             </div>
         </div>
-        <ul>
+        <ul>    
+          <li onClick={props.onOpen}>
+              <NavLink to="/profile">Profile</NavLink>
+            </li>     
           <PrivateLink permission={[1]}>
             <li onClick={props.onOpen}>
-              <NavLink to="/">Home</NavLink>
+              <NavLink to="/users">Users</NavLink>
+            </li>
+          </PrivateLink>
+          <PrivateLink permission={[1]}>
+            <li onClick={props.onOpen}>
+              <NavLink to="/roles">Roles</NavLink>
             </li>
           </PrivateLink>
           <li onClick={props.onLogout}>
