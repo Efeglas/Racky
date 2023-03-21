@@ -39,11 +39,20 @@ const TimerProvider = (props) => {
         });
         const json = await response.json();
         console.log(json); 
+        localStorage.setItem('token', json.data.token);
+        localStorage.setItem('refreshToken', json.data.refreshToken);
+        localStorage.setItem('tokenExpire', json.data.tokenExpire);
+        
     }
     //console.log(actualTime);
+    //console.log(tokenExpire , actualTime.getTime());
     if (tokenExpire < actualTime.getTime()) {
         console.log("BIGGER");
         refreshToken();
+        /* 
+        
+        1679387321337 1679383776289 TimerProvider.js:44
+1679387321337 1679383777301*/
     }
 
     const reset = () => {

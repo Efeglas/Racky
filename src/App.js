@@ -14,11 +14,11 @@ const router = createBrowserRouter([
   ]},
 ]);
 
-function App() {
+function App () {
 
   const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
 
-  useEffect(() => {
+  useEffect(async () => {
     const token = localStorage.getItem('token');
     if (token === null) {
       setUserIsLoggedIn(false);
@@ -26,7 +26,16 @@ function App() {
       setUserIsLoggedIn(true);
     }
 
+    const response = await fetch("http://192.168.50.62:8080/user/test", {
+              method: "GET",
+              headers: {
+                  'Content-Type': 'application/json',
+              },            
+          });
+          const json = await response.json();
+          console.log(json); 
   }, []);
+
 
   return (
     <Fragment>
