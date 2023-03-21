@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import TimerContext from "./timer-context";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 const TimerProvider = (props) => {
 
@@ -15,12 +16,12 @@ const TimerProvider = (props) => {
     const [seconds, setSeconds] = useState(defaultTimerValue);
     useEffect(() => {
         const intervalId = setInterval(() => {     
-            setSeconds(seconds => seconds - 1);
+            setSeconds(seconds => seconds - 1);          
         }, 1000); 
         
 
         return () => clearInterval(intervalId);
-    }, []);
+    }, [seconds]);
 
     if (seconds < 0) {
         onLogoutHandler();
@@ -38,21 +39,32 @@ const TimerProvider = (props) => {
             body: JSON.stringify({username: localStorage.getItem('username'), refreshToken: localStorage.getItem('refreshToken')}) 
         });
         const json = await response.json();
-        console.log(json); 
-        localStorage.setItem('token', json.data.token);
-        localStorage.setItem('refreshToken', json.data.refreshToken);
-        localStorage.setItem('tokenExpire', json.data.tokenExpire);
+
+        if (response.ok) {           
+            if (json.data !== undefined) {
+                localStorage.setItem('token', json.data.token);
+                localStorage.setItem('refreshToken', json.data.refreshToken);
+                localStorage.setItem('tokenExpire', json.data.tokenExpire);
+            }
+        } else {
+            toast.error("Can't refresh token", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                });
+            onLogoutHandler();
+        }
+        
         
     }
-    //console.log(actualTime);
-    //console.log(tokenExpire , actualTime.getTime());
-    if (tokenExpire < actualTime.getTime()) {
-        console.log("BIGGER");
-        refreshToken();
-        /* 
-        
-        1679387321337 1679383776289 TimerProvider.js:44
-1679387321337 1679383777301*/
+  
+    if (tokenExpire < actualTime.getTime()) {      
+        refreshToken();    
     }
 
     const reset = () => {
