@@ -62,10 +62,8 @@ const Login = () => {
             pwdReset();
 
             if (!json.data.ownPw) {
-                //ownPw = false;
-                console.log("SET NEW PASS");
-                navigate("/password?notOwn=true");
-                //return <Navigate to='/password' />
+                
+                navigate("/password?notOwn=true");               
             } 
             
         } else {
