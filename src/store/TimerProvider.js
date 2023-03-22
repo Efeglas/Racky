@@ -25,6 +25,7 @@ const TimerProvider = (props) => {
 
     if (seconds < 0) {
         onLogoutHandler();
+        return;
     }
 
     const tokenExpire = Number(localStorage.getItem("tokenExpire"));
@@ -63,7 +64,7 @@ const TimerProvider = (props) => {
         
     }
   
-    if (tokenExpire < actualTime.getTime()) {      
+    if (tokenExpire !== null && tokenExpire < actualTime.getTime()) {      
         refreshToken();    
     }
 

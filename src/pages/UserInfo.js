@@ -7,7 +7,7 @@ import Admins from "../components/userInfo/Admins";
 const UserInfo = () => {
 
     const {data} = useLoaderData();
-
+    
     return (
         <Fragment>
             <div className={style.container}>
