@@ -285,12 +285,18 @@ const Roles = () => {
 
     const generatePermCheckList = () => {
         let jsx = [];
+
+        let isDefaultUser = false;
+        if (selectedRole.id === 1) {
+            isDefaultUser = true;
+        }
+
         for (const key in permCheckList) {
             
             jsx.push(
             <tr key={permCheckList[key].id}>
                 <td>
-                    <input type='checkbox' id={`permCheck${permCheckList[key].id}`} checked={permCheckList[key].value} onChange={checkOnChangeHandler.bind(null, permCheckList[key].id)}/>
+                    <input type='checkbox' id={`permCheck${permCheckList[key].id}`} checked={permCheckList[key].value} disabled={isDefaultUser} onChange={checkOnChangeHandler.bind(null, permCheckList[key].id)}/>
                 </td>
                 <td>
                     <label htmlFor={`permCheck${permCheckList[key].id}`}>{permCheckList[key].name}</label>
@@ -462,13 +468,7 @@ const Roles = () => {
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <ul>
-                <li>Szerepkörök felvétele</li>
-                <li>Szerepkörök Átnevezése</li>
-                <li>Szerepkörök törlése (ha nincs hozzácsatolva senki)</li>
-                <li>Szerepkörökhöz jogosultságok beállítása</li>
-            </ul>
+            </div>           
         </Fragment>
     );
 }
