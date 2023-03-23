@@ -108,6 +108,40 @@
     text-align: center;
 }
 
+.checkTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.checkTable tr th:first-of-type {
+    text-align: center;
+    border-top-left-radius: 4px;
+}
+
+.checkTable tr th:last-of-type {
+    border-top-right-radius: 4px;
+}
+
+.checkTable tr th {
+    background-color: #34495e;
+    color: white;
+    text-align: left;
+    padding: 15px 10px;
+}
+
+.checkTable tr td:first-of-type {
+    background-color: rgb(247, 247, 247);
+    border: 2px solid rgb(235, 235, 235);
+    padding: 15px 10px;
+    font-weight: 600;
+}
+
+.checkTable tr td {
+    background-color: rgb(255, 255, 255);
+    border: 2px solid rgb(235, 235, 235);
+    padding: 10px;
+}
+
 /* INPUT STYLES */
 .inputGroup {
     display: flex;
@@ -160,6 +194,34 @@ input:focus {
     padding: 10px 20px;
     border-radius: 4px;
     border: none;
+    margin-left: 4px;
+}
+
+.btn.btnDanger {
+    background-color: #e74c3c;
+    color: white;  
+}
+
+.btn.btnDanger:hover {
+    background-color: #f16151;
+}
+
+.btn.btnDefault {
+    background-color: #bdc3c7;
+    color: black;  
+}
+
+.btn.btnDefault:hover {
+    background-color: #ced4d8;
+}
+
+.btn.btnSuccess {
+    background-color: #27ae60;
+    color: white;  
+}
+
+.btn.btnSuccess:hover {
+    background-color: #2ebb69;
 }
 
 .btn:hover {
@@ -173,3 +235,16 @@ input:focus {
     margin-top: 10px;
 }
 /* FORMB UTTONS STYLES END*/
+
+.flex {
+    display: flex;
+    width: 100%;
+}
+
+.flexEnd {
+    justify-content: flex-end;
+}
+
+.mb1 {
+    margin-bottom: 1rem;
+}

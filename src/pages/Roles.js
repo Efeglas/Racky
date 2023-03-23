@@ -16,6 +16,7 @@ const Roles = () => {
     const [permissionData, setPermissionData] = useState();
     const [roleData, setRoleData] = useState();
     const [permCheckList, setPermCheckList] = useState();
+    const [isAddRole, setIsAddRole] = useState(false);
     //console.log(permissionData);
 
     const loadPermissions = async () => {
@@ -91,6 +92,7 @@ const Roles = () => {
 
     
     const renameClickHandler = (role) => {
+        setIsAddRole(false);
         setSelectedRole(role);
         console.log(role.name);
         setRoleNameEnteredValue(role.name);
@@ -98,6 +100,7 @@ const Roles = () => {
     }
     
     const deleteClickHandler = (role) => {
+        setSelectedRole(role);
         showDeleteModal();
         
     }
@@ -108,6 +111,7 @@ const Roles = () => {
     } */
    
     const checklistClickHandler = (role) => {
+        setSelectedRole(role);
         showPermissionModal();
 
   //      permCheckList
@@ -214,6 +218,47 @@ const Roles = () => {
         hideEditModal();
     }
 
+    const permissionSaveClickHandler = async () => {
+        console.log(permCheckList);
+
+        const response = await fetch("http://192.168.50.62:8080/role/permissions/save", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({token: localStorage.getItem("token"), role: selectedRole.id, checks: permCheckList}) 
+        });
+        const json = await response.json();
+        console.log(json);
+
+        if (response.ok) {
+            toast.success('Permissions saved', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            loadRoles();
+        } else {
+            toast.error(json.message, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+
+        hidePermissionModal(); 
+    }
+
     const generateTRs = (data) => {
 
         return data.map((role) => {       
@@ -224,7 +269,7 @@ const Roles = () => {
                     <td>
                         <button className={style.btnPerm} title='Permissions' onClick={checklistClickHandler.bind(null, role)}><Icon size='20' icon='checklist'/></button>
                         <button className={style.btnEdit} title='Rename' onClick={renameClickHandler.bind(null, role)}><Icon size='20' icon='edit'/></button>
-                        <button className={style.btnDelete} title='Delete' onClick={deleteClickHandler}><Icon size='20' icon='trash'/></button>
+                        <button className={style.btnDelete} title='Delete' onClick={deleteClickHandler.bind(null, role)}><Icon size='20' icon='trash'/></button>
                     </td>
                 </tr>);
         });
@@ -242,10 +287,16 @@ const Roles = () => {
         let jsx = [];
         for (const key in permCheckList) {
             
-            jsx.push(<div key={permCheckList[key].id}>
-                <label htmlFor={`permCheck${permCheckList[key].id}`}>{permCheckList[key].name}</label>
-                <input type='checkbox' name={`permCheck${permCheckList[key].id}`} checked={permCheckList[key].value} onChange={checkOnChangeHandler.bind(null, permCheckList[key].id)}/>
-            </div>);
+            jsx.push(
+            <tr key={permCheckList[key].id}>
+                <td>
+                    <input type='checkbox' id={`permCheck${permCheckList[key].id}`} checked={permCheckList[key].value} onChange={checkOnChangeHandler.bind(null, permCheckList[key].id)}/>
+                </td>
+                <td>
+                    <label htmlFor={`permCheck${permCheckList[key].id}`}>{permCheckList[key].name}</label>
+                </td>
+                <td>{permCheckList[key].description}</td>
+            </tr>);
         }
         return jsx;
     }
@@ -256,31 +307,137 @@ const Roles = () => {
         tbody = generateTRs(roleData);
     } 
 
-   
-
     const roleNamePwClass = roleNameHasError ? style.invalid : "";
+
+    const addRoleSaveClickHandler = async () => {
+
+        const response = await fetch("http://192.168.50.62:8080/role/add", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({token: localStorage.getItem("token"), name: roleNameEnteredValue}) 
+        });
+        const json = await response.json();
+        console.log(json);
+
+        if (response.ok) {
+            toast.success('Role added', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            loadRoles();
+        } else {
+            toast.error(json.message, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+
+        hideEditModal(); 
+    }
 
     const editModal = (
       <Modal onClose={hideEditModal}>
-        <h3 className={style.mt0}>Rename role</h3>
+        <h3 className={style.mt0}>{isAddRole ? "Add role": "Rename role"}</h3>
         <div className={`${style.inputGroup} ${roleNamePwClass}`}>
           <label>Role name</label>
           <input type="text" onInput={roleNameChangeHandler} onBlur={roleNameBlurHandler} value={roleNameEnteredValue}/>
           <p>The field cannot be empty</p>
         </div>
         <div className={style.formBtns}>
-            <button className={style.btn} onClick={editSaveOnClickHandler}>Save</button>
+            {isAddRole && <button className={`${style.btn} ${style.btnSuccess}`} onClick={addRoleSaveClickHandler}>Add</button>}
+            {!isAddRole && <button className={style.btn} onClick={editSaveOnClickHandler}>Save</button>}
         </div>
       </Modal>
     );
 
+    const onDeleteRoleClickHandler = async () => {
+
+        const response = await fetch("http://192.168.50.62:8080/role/delete", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({token: localStorage.getItem("token"), role: selectedRole.id}) 
+        });
+        const json = await response.json();
+        console.log(json);
+
+        if (response.ok) {
+            toast.success('Role deleted', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            loadRoles();
+        } else {
+            toast.error(json.message, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+
+        hideDeleteModal();
+    }
+
     const deleteModal = <Modal onClose={hideDeleteModal}>
-        <p>delete</p>
+        <h3 className={style.mt0}>Delete {selectedRole.name} role</h3>
+        <p>Are you sure you want to delete this role?</p>
+        <div className={style.formBtns}>
+            <button className={`${style.btn} ${style.btnDanger}`} onClick={onDeleteRoleClickHandler}>Delete</button>
+            <button className={`${style.btn} ${style.btnDefault}`} onClick={hideDeleteModal}>Cancel</button>
+        </div>
     </Modal>;
 
     const permissionModal = <Modal onClose={hidePermissionModal}>
-        {generatePermCheckList()}
+        <h3 className={style.mt0}>{selectedRole.name} role permissions</h3>
+        <table className={style.checkTable}>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Permission</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {generatePermCheckList()}
+            </tbody>
+        </table>
+        <div className={style.formBtns}>
+            <button className={style.btn} onClick={permissionSaveClickHandler}>Save</button>
+        </div>
     </Modal>;
+
+    const addRoleClickHandler = () => {
+        setIsAddRole(true);
+        showEditModal();
+    }
+
+    
 
     return (
         <Fragment>
@@ -288,6 +445,9 @@ const Roles = () => {
             {isShownDeleteModal && deleteModal}
             {isShownPermissionModal && permissionModal}
             <div className={style.container}>
+                <div className={`${style.flex} ${style.flexEnd} ${style.mb1}`}>
+                    <button className={`${style.btn} ${style.btnSuccess}`} onClick={addRoleClickHandler}>Add role</button>
+                </div>
                 <div className={style.roles}>
                     <table>
                         <thead>
