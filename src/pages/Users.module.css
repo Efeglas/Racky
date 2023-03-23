@@ -1,0 +1,238 @@
+/* INPUT STYLES */
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+input:disabled {
+    background-color: rgb(233, 233, 233);
+}
+
+select:disabled {
+    background-color: rgb(233, 233, 233) !important;
+}
+
+.inputGroup label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.inputGroup input {
+    padding: 5px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    margin-bottom: 0;
+    height: 100%;
+}
+
+.inputGroup select {
+    padding: 5px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    margin-bottom: 0;
+    height: 100%;
+    background-color: white;
+}
+
+.inputGroup>p{
+    color: #e74c3c;
+    display: none;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.inputGroup.invalid>p{
+    display: block;
+}
+
+.inputGroup.invalid>label{
+    color: #e74c3c;
+}
+
+.inputGroup.invalid>input{
+    background-color: #f7b9b3;
+}
+
+input:focus {
+    border-color: #2980b9;
+    outline: none;
+    border-radius: 4px;
+}
+/* INPUT STYLES END*/
+
+/* FORMB UTTONS STYLES */
+.btn {
+    background-color: #2980b9;
+    color: white;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    margin-left: 4px;
+}
+
+.btn.btnDanger {
+    background-color: #e74c3c;
+    color: white;  
+}
+
+.btn.btnDanger:hover {
+    background-color: #f16151;
+}
+
+.btn.btnDefault {
+    background-color: #bdc3c7;
+    color: black;  
+}
+
+.btn.btnDefault:hover {
+    background-color: #ced4d8;
+}
+
+.btn.btnSuccess {
+    background-color: #27ae60;
+    color: white;  
+}
+
+.btn.btnSuccess:hover {
+    background-color: #2ebb69;
+}
+
+.btn.btnWarning {
+    background-color: #f39c12;
+    color: white;  
+}
+
+.btn.btnWarning:hover {
+    background-color: #f8ae38;
+}
+
+.btn:hover {
+    background-color: #4296ce;
+    cursor: pointer;
+}
+
+.formBtns {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.btnEdit {
+    background: none;
+    color: #3498db;
+    border: none;
+}
+
+
+.btnEdit:hover {
+    color: #4baef0;
+    cursor:pointer;
+}
+
+.btnDelete {
+    background: none;
+    color: #e74c3c;
+    border: none;
+}
+
+.btnDelete:hover {  
+    color: #f15e4e;
+    cursor:pointer;
+}
+/* FORM BUTTONS STYLES END*/
+
+.mt0 {
+    margin-top: 0;
+}
+
+.flex {
+    display: flex;
+    width: 100%;
+}
+
+.flexSpaceBetw {
+    justify-content: space-between;
+}
+
+.flexEnd {
+    justify-content: flex-end;
+}
+
+.mb1 {
+    margin-bottom: 1rem;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 30px;
+}
+
+.roles {
+    background-color: white;
+    box-shadow: 0 0 1px rgba(0,0,0,.125),0 1px 3px rgba(0,0,0,.2);
+    border-radius: 4px;
+    width: 100%;
+}
+
+.roles table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.roles table thead {
+    box-shadow: 0 2px 1px -1px #34495e;
+}
+
+.roles table th {
+    background-color: #34495e;
+    color: white;
+    text-align: left;
+}
+
+.roles table th,
+.roles table td {
+    padding: 10px;
+}
+
+.roles table th:first-of-type {   
+    border-top-left-radius: 4px;
+}
+
+.roles table th:last-of-type {  
+    border-top-right-radius: 4px;
+}
+
+.roles table tbody tr{
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+}
+
+.roles table thead tr{
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+}
+
+.roles table tbody tr:nth-child(even) {
+    background-color: rgb(238, 238, 238);
+}
+
+.roles table tbody tr:hover {
+    background-color: #3498db25;
+}
+
+.roles table tbody {
+    display: block;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.textCenter {
+    text-align: center;
+}
+
