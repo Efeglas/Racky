@@ -27,7 +27,7 @@ const SideNavigation = (props) => {
           <li onClick={props.onOpen}>
               <NavLink to="/profile">Profile</NavLink>
             </li>     
-          <PrivateLink permission={[1]}>
+          <PrivateLink permission={[2]}>
             <li onClick={props.onOpen}>
               <NavLink to="/users">Users</NavLink>
             </li>
