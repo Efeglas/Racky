@@ -77,7 +77,7 @@ const Password = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({username: username, oldpass: oldPassEnteredValue, newpass: newPassEnteredValue}) 
+            body: JSON.stringify({token: localStorage.getItem("token"), username: username, oldpass: oldPassEnteredValue, newpass: newPassEnteredValue}) 
         });
         const json = await response.json();
 
