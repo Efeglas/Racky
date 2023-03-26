@@ -37,6 +37,11 @@ const SideNavigation = (props) => {
               <NavLink to="/roles">Roles</NavLink>
             </li>
           </PrivateLink>
+          <PrivateLink permission={[3]}>
+            <li onClick={props.onOpen}>
+              <NavLink to="/layouts">Layouts</NavLink>
+            </li>
+          </PrivateLink>
           <li onClick={props.onLogout}>
             <button type='button'>Logout</button>
           </li>
