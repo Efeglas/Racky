@@ -15,6 +15,7 @@ import Password from "./pages/Password";
 import Profile, {loader as userDataLoader} from "./pages/Profile";
 import UserInfo, {loader as adminsLoader} from "./pages/UserInfo";
 import Layout from "./pages/Layout";
+import Items from "./pages/Items";
 
 const router = createBrowserRouter([
   {path: "/login", element: <Login />},
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
     {path: "/password", element: <Password />},
     {path: "/layouts", element: <Layout />},
     {path: "/profile", element: <Profile />, loader: userDataLoader},
+    {path: "/items", element: <Items />},
   ]},
 ]);
 
