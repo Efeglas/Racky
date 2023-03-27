@@ -27,6 +27,7 @@ const Layout = () => {
     const [selectedShelf, setSelectedShelf] = useState();
 
     const [deleteMode, setDeleteMode] = useState('shelf');
+    const [isEditShelf, setIsEditShelf] = useState(false);
     
     const {
         isShown: isShownAddLayoutModal,
@@ -94,7 +95,7 @@ const Layout = () => {
         changeHandler: shelfLevelChangeHandler,
         blurHandler:shelfLevelBlurHandler,
         reset: shelfLevelReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(value => value !== "");
 
     const generateLayoutOptions = () => {
         if (resultLayouts.length > 0) {
@@ -167,12 +168,7 @@ const Layout = () => {
             }
         });
         
-        setGrid(temp);
-        
-        //todo kell egy sima mode
-        //todo kell egy placing mode
-        //todo kell valahogy egy 2d array
-        //todo kellenek random szinek
+        setGrid(temp);      
     }
 
     const placeShelfClickHandler = () => {
@@ -346,8 +342,11 @@ const Layout = () => {
         setSelectedShelf(id);
     }
 
-    const shelfEditClickHandler = () => {
-
+    const shelfEditClickHandler = (shelf) => {
+        showAddShelfModal();
+        setshelfNameEnteredValue(shelf.name);
+        setshelfLevelEnteredValue(shelf.levels);
+        setIsEditShelf(true);
     }
 
     const shelfDeleteClickHandler = () => {
@@ -479,12 +478,57 @@ const Layout = () => {
         </Modal>
     );
 
+    const saveNewNameForShelf = async () => {
+        
+        const response = await fetch("http://192.168.50.62:8080/layout/shelves/edit", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: localStorage.getItem("token"),   
+                id: selectedShelf,           
+                name: shelfNameEnteredValue,              
+            }) 
+        });
+        const json = await response.json();
+        console.log(json);
+
+        if (response.ok) {
+            toast.success('Shelf edited', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            loadShelfs();
+        } else {
+            toast.error(json.message, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }
+
+        hideAddShelfModal();
+    }
+
     const shelfClass = shelfNameHasError ? style.invalid : "";
     const levelsClass = shelfLevelHasError ? style.invalid : "";  
 
     const addShelfModal = (
         <Modal onClose={hideAddShelfModal}>
-            <h3 className={style.mt0}>Add shelf</h3>
+            {isEditShelf && <h3 className={style.mt0}>Edit shelf</h3>}
+            {!isEditShelf && <h3 className={style.mt0}>Add shelf</h3>}
             <div className={`${style.inputGroup} ${shelfClass}`}>
                 <label>Shelf name</label>
                 <input type="text" onInput={shelfNameChangeHandler} onBlur={shelfNameBlurHandler} value={shelfNameEnteredValue}/>
@@ -492,11 +536,12 @@ const Layout = () => {
             </div>
             <div className={`${style.inputGroup} ${levelsClass}`}>
                 <label>Levels</label>
-                <input type="number" onInput={shelfLevelChangeHandler} onBlur={shelfLevelBlurHandler} value={shelfLevelEnteredValue}/>
+                <input type="number" onInput={shelfLevelChangeHandler} onBlur={shelfLevelBlurHandler} value={shelfLevelEnteredValue} disabled={isEditShelf}/>
                 <p>The field cannot be empty</p>
             </div>           
             <div className={style.formBtns}>
-                <button className={`${style.btn} ${style.btnSuccess}`} onClick={placeShelfClickHandler}>Place on layout</button>
+                {isEditShelf && <button className={`${style.btn} ${style.btnSuccess}`} onClick={saveNewNameForShelf}>Save</button>}
+                {!isEditShelf && <button className={`${style.btn} ${style.btnSuccess}`} onClick={placeShelfClickHandler}>Place on layout</button>}
                 <button className={`${style.btn} ${style.btnDefault}`} onClick={hideAddShelfModal}>Cancel</button>
             </div>
         </Modal>
@@ -615,6 +660,13 @@ const Layout = () => {
         setDeleteMode("layout");
         showDeleteModal();
     }
+
+    const addShelfClickHandler = () => {
+        shelfNameReset();
+        shelfLevelReset();
+        showAddShelfModal();
+        setIsEditShelf(false);
+    }
     
     return (
         <Fragment>
@@ -647,7 +699,7 @@ const Layout = () => {
                     <div className={`${style.box} ${style.w30} ${style.mlXs}`}>
                         <div className={`${style.flex} ${style.flexSpaceBetw} ${style.mb1} ${style.alignItemsCenter}`}>
                             <h3 className={style.m0}>Shelves:</h3>
-                            <button key='button1' className={`${style.btn} ${style.btnSuccess}`} onClick={showAddShelfModal}>Add shelf</button>
+                            <button key='button1' className={`${style.btn} ${style.btnSuccess}`} onClick={addShelfClickHandler}>Add shelf</button>
                         </div>
                         <div className={`${style.shelves}`}>
                             {resultShelves.length === 0 && <p className={style.mt0}>Shelves can not be rendered...</p>}
