@@ -471,44 +471,6 @@ const Users = () => {
         </Modal>
     );
 
-   
-
-   /*  const registerModal = (
-        <Modal onClose={hideRegisterModal}>
-            <h3 className={style.mt0}>Register user</h3>
-            <div className={`${style.inputGroup} ${roleNamePwClass}`}>
-                <label>First name</label>
-                <input type="text" onInput={""} onBlur={""} value={""}/>
-                <p>The field cannot be empty</p>
-            </div>
-            <div className={`${style.inputGroup} ${roleNamePwClass}`}>
-                <label>Last name</label>
-                <input type="text" onInput={""} onBlur={""} value={""}/>
-                <p>The field cannot be empty</p>
-            </div>
-            <div className={`${style.inputGroup} ${roleNamePwClass}`}>
-                <label>Email</label>
-                <input type="text" onInput={""} onBlur={""} value={""}/>
-                <p>The field cannot be empty</p>
-            </div>
-            <div className={`${style.inputGroup} ${roleNamePwClass}`}>
-                <label>Phone</label>
-                <input type="text" onInput={""} onBlur={""} value={""}/>
-                <p>The field cannot be empty</p>
-            </div>
-            <div className={style.inputGroup}>
-                <label>Role</label>
-                <select>
-                    <option value={1}>Admin</option>
-                    <option value={2}>Default</option>
-                </select>
-            </div>
-            <div className={style.formBtns}>
-                <button className={`${style.btn} ${style.btnSuccess}`} onClick={""}>Register</button>              
-            </div>
-        </Modal>
-    ); */
-
     const deleteModal = (
         <Modal onClose={hideDeleteModal}>
           <h3 className={style.mt0}>Delete {`${selectedUser.lastName} ${selectedUser.firstName}`} user</h3>
