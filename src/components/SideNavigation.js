@@ -23,8 +23,11 @@ const SideNavigation = (props) => {
                 <Icon size='20' icon='xmark'/>
             </div>
         </div>
-        <ul>    
-          <li onClick={props.onOpen}>
+        <ul>   
+            <li onClick={props.onOpen}>
+              <NavLink to="/">Home</NavLink>
+            </li>  
+            <li onClick={props.onOpen}>
               <NavLink to="/profile">Profile</NavLink>
             </li>     
           <PrivateLink permission={[2]}>
@@ -45,6 +48,11 @@ const SideNavigation = (props) => {
           <PrivateLink permission={[4]}>
             <li onClick={props.onOpen}>
               <NavLink to="/items">Items</NavLink>
+            </li>
+          </PrivateLink>
+          <PrivateLink permission={[5]}>
+            <li onClick={props.onOpen}>
+              <NavLink to="/inventory">Invetory</NavLink>
             </li>
           </PrivateLink>
           <li onClick={props.onLogout}>
