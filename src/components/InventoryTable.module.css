@@ -1,0 +1,134 @@
+.inventory {
+    background-color: white;
+    box-shadow: 0 0 1px rgba(0,0,0,.125),0 1px 3px rgba(0,0,0,.2);
+    border-radius: 4px;
+    width: 100%;
+}
+
+.inventory table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.inventory table thead {
+    box-shadow: 0 2px 1px -1px #34495e;
+}
+
+.inventory table th {
+    background-color: #34495e;
+    color: white;
+    text-align: left;
+}
+
+.inventory table th,
+.inventory table td {
+    padding: 10px;
+}
+
+.inventory table th:first-of-type {   
+    border-top-left-radius: 4px;
+}
+
+.inventory table th:last-of-type {  
+    border-top-right-radius: 4px;
+}
+
+.inventory table tbody tr{
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+}
+
+.inventory table thead tr{
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+}
+
+.inventory table tbody tr:nth-child(even) {
+    background-color: rgb(238, 238, 238);
+}
+
+.inventory table tbody tr:hover {
+    background-color: #3498db25;
+}
+
+.inventory table tbody {
+    display: block;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.textCenter {
+    text-align: center;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+}
+
+.pagination div:first-of-type{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.pagination div:first-of-type p{
+    margin-left: 10px;
+}
+
+.pagination div:last-of-type{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.pagination select{
+    height: 30px;
+    border: none;
+    border-radius: 4px;
+    margin: 5px;
+}
+
+.pagination button{
+    height: 30px;
+    border: none;
+    border-radius: 4px;
+    margin: 5px;
+}
+
+.pagination select,
+.pagination button {
+    color: white;
+    background-color: #34495e; 
+}
+
+.pagination button:hover {
+    background-color: #425970; 
+    cursor: pointer;
+}
+
+.mb0 {
+    margin-bottom: 0;
+}
+
+.flex {
+    display: flex;
+}
+
+.filterRow input{
+    width: 100%;
+}
+
+.filterRow .last input{
+    width: 80%;
+}
+
+.filterRow .last button{
+    width: 20%;
+}
+
+.selected {
+    background-color: #3498db65 !important;
+}

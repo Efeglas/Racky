@@ -1,11 +1,17 @@
 import Icon from '../icons/Icon';
 import style from './Inventory.module.css';
 import { useState, useEffect } from 'react';
+import useInput from '../hooks/use-Input';
+import InventoryTable from '../components/InventoryTable';
+import MiniLayout from '../components/MiniLayout';
+import MiniShelf from '../components/MiniShelf';
 
 const Inventory = () => {
 
-    const [resultInventory, setResultInventory] = useState({});
-
+    const [resultInventory, setResultInventory] = useState([]);
+    const [resultLayout, setResultLayout] = useState({});
+    const [selectedInventory, setSelectedInventory] = useState({});
+    
     const loadInventory = async () => {
 
         const response = await fetch("http://192.168.50.62:8080/inventory/get", {
@@ -20,149 +26,53 @@ const Inventory = () => {
         setResultInventory(json.inventory);  
     }
 
+    const loadLayout = async () => {
+        if (selectedInventory.id !== undefined) {
+
+            const response = await fetch("http://192.168.50.62:8080/inventory/layout", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({token: localStorage.getItem("token"), layout: selectedInventory.Shelf.LayoutId}) 
+            });
+            const json = await response.json();
+            console.log(json);    
+            setResultLayout(json.layout); 
+        }
+    }
+
+    const onInventoryClick = (inventory) => {
+        setSelectedInventory(inventory);
+        console.log(selectedInventory)
+    }
+
     useEffect(() => {
         loadInventory();
     }, []);
 
-    const generateOptions = () => {
-        //? PLACEHOLDER
-        const array = [];
-        for (let i = 1; i <= 100; i++) {
-            array.push(<option key={i} value={i}>{i}</option>);
-        }
-        return array;
-    }
+    useEffect(() => {
+        loadLayout();
+    }, [selectedInventory]);
+
 
     return (
         <div className={style.container}>
                           
-            <div className={style.inventory}>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Item</th>
-                            <th>Quantity</th>
-                            <th>Measure</th>
-                            <th>Shelf</th>
-                            <th>Shelf level</th>
-                        </tr>
-                        <tr>
-                            <td><input type='text' placeholder='ID'/></td>
-                            <td><input type='text' placeholder='Item'/></td>
-                            <td><input type='text' placeholder='Quantity'/></td>
-                            <td><input type='text' placeholder='Measure'/></td>
-                            <td><input type='text' placeholder='Shelf'/></td>
-                            <td><input type='text' placeholder='Shelf level'/></td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Chocolate</td>
-                            <td>100</td>
-                            <td>pcs</td>
-                            <td>S4</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Chocolate</td>
-                            <td>100</td>
-                            <td>pcs</td>
-                            <td>S4</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Chocolate</td>
-                            <td>100</td>
-                            <td>pcs</td>
-                            <td>S4</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Chocolate</td>
-                            <td>100</td>
-                            <td>pcs</td>
-                            <td>S4</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Chocolate</td>
-                            <td>100</td>
-                            <td>pcs</td>
-                            <td>S4</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Chocolate</td>
-                            <td>100</td>
-                            <td>pcs</td>
-                            <td>S4</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Chocolate</td>
-                            <td>100</td>
-                            <td>pcs</td>
-                            <td>S4</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Chocolate</td>
-                            <td>100</td>
-                            <td>pcs</td>
-                            <td>S4</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Chocolate</td>
-                            <td>100</td>
-                            <td>pcs</td>
-                            <td>S4</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Chocolate</td>
-                            <td>100</td>
-                            <td>pcs</td>
-                            <td>S4</td>
-                            <td>4</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <hr className={style.mb0}></hr>
-                <div className={style.pagination}>
-                    <div>
-                        <p>Showing 1 to 10 of 57 entries</p>
-                    </div>
-                    <div>
-                        <button><Icon size='20' icon='angle-left' /></button>
-                        <select>
-                            {generateOptions()}
-                        </select>
-                        . oldal
-                        <button><Icon size='20' icon='angle-right' /></button>
-                    </div>
-                </div>
-            </div>
+            <InventoryTable inventory={resultInventory} onInventoryClick={onInventoryClick} invid={selectedInventory.id}/>
             
             <div className={style.layout}>
                 <div>
-                    <h4>Layout:</h4>
-                    <p>No available layout...</p>
+                    <h4>Layout: {resultLayout.Shelves !== undefined && `(${resultLayout.name})`}</h4>
+                    
+                    { resultLayout.Shelves === undefined && <p>No available layout...</p>}
+                    { resultLayout.Shelves !== undefined && <MiniLayout layout={resultLayout} shelf={selectedInventory.Shelf} />}
+                    
                 </div>
                 <div>
-                    <h4>Shelf:</h4>
-                    <p>No available shelf...</p>
+                    <h4>Shelf: {resultLayout.Shelves !== undefined && `(${selectedInventory.Shelf.name})`}</h4>
+                    { resultLayout.Shelves === undefined && <p>No available shelf...</p>}
+                    { resultLayout.Shelves !== undefined && <MiniShelf inventory={selectedInventory}/>}
                 </div>
             </div>
 
