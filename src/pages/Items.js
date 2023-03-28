@@ -42,6 +42,16 @@ const Items = () =>{
         reset: itemNameReset,
     } = useInput(value => value.trim() !== "");
 
+    const {
+        value: barcodeEnteredValue,
+        setValue: setbarcodeEnteredValue,
+        isValid: barcodeIsValid,
+        hasError: barcodeHasError,
+        changeHandler: barcodeChangeHandler,
+        blurHandler:barcodeBlurHandler,
+        reset: barcodeReset,
+    } = useInput(value => value.trim() !== "");
+
     const loadItems = async () => {
         const response = await fetch("http://192.168.50.62:8080/item/get", {
             method: "POST",
@@ -81,6 +91,7 @@ const Items = () =>{
         setIsEdit(true);
         console.log(selectedItem);
         setSelectedMeasureValue(item.Measure.id);
+        setbarcodeEnteredValue(item.barcode);
         
         setitemNameEnteredValue(item.name);
 
@@ -154,6 +165,7 @@ const Items = () =>{
                 token: localStorage.getItem("token"),
                 id: selectedItem.id,
                 name: itemNameEnteredValue,
+                barcode: barcodeEnteredValue,
                 measure: selectedMeasureValue
             }) 
         });
@@ -198,7 +210,8 @@ const Items = () =>{
             body: JSON.stringify({
                 token: localStorage.getItem("token"),              
                 name: itemNameEnteredValue,
-                measure: selectedMeasureValue
+                measure: selectedMeasureValue,
+                barcode: barcodeEnteredValue,
             }) 
         });
         const json = await response.json();
@@ -236,7 +249,8 @@ const Items = () =>{
         setIsEdit(false);
         setIsLocked(false);      
         setSelectedMeasureValue(0);
-        itemNameReset()
+        itemNameReset();
+        barcodeReset();
         showEditModal();
     }
 
@@ -255,6 +269,7 @@ const Items = () =>{
             return (
                 <tr key={item.id}>
                     <td>{item.id}</td>
+                    <td>{item.barcode}</td>
                     <td>{item.name}</td>
                     <td>{item.Measure.name}</td>
                     <td>                     
@@ -282,14 +297,14 @@ const Items = () =>{
         const filterLowerCase = itemFilter.toLowerCase();
 
         if (item.name.toLowerCase().includes(filterLowerCase) || 
-            
+        item.barcode.toLowerCase().includes(filterLowerCase) ||         
             item.Measure.name.toLowerCase().includes(filterLowerCase)) {
                 return true;
             } 
             return false;
     }
 
-    let tbody = <tr><td colSpan='4' className={style.textCenter}>No data available...</td></tr>;
+    let tbody = <tr><td colSpan='5' className={style.textCenter}>No data available...</td></tr>;
 
     if (resultItems !== undefined) {
         const filteredUsers = resultItems.filter(filterIsInItemObj);
@@ -297,7 +312,7 @@ const Items = () =>{
         if (filteredUsers.length > 0) {
             tbody = generateTRs(filteredUsers);
         } else {
-            tbody = <tr><td colSpan='4' className={style.textCenter}>No data available...</td></tr>;
+            tbody = <tr><td colSpan='5' className={style.textCenter}>No data available...</td></tr>;
         }
     }
 
@@ -306,6 +321,7 @@ const Items = () =>{
     }
 
      const itemNameClass = itemNameHasError && !isLocked ? style.invalid : "";
+     const barcodeClass = barcodeHasError && !isLocked ? style.invalid : "";
      
 
     const editModal = (
@@ -317,7 +333,12 @@ const Items = () =>{
                 <label>Item name</label>
                 <input type="text" value={itemNameEnteredValue} onInput={itemNameChangeHandler} onBlur={itemNameBlurHandler}/>
                 <p>The field cannot be empty</p>
-            </div>          
+            </div>  
+            <div className={`${style.inputGroup} ${barcodeClass}`}>
+                <label>Barcode</label>
+                <input type="text" value={barcodeEnteredValue} onInput={barcodeChangeHandler} onBlur={barcodeBlurHandler}/>
+                <p>The field cannot be empty</p>
+            </div>         
             <div className={style.inputGroup}>
                 <label>Measure</label>
                 <select value={selectedMeasureValue} onChange={selectOnChangeHandler}>
@@ -361,6 +382,7 @@ const Items = () =>{
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Barcode</th>
                                 <th>Item name</th>
                                 <th>Measure</th>
                                 <th>Actions</th>

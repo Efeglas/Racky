@@ -10,6 +10,7 @@ const InventoryTable = (props) => {
     
 
     const idRef = useRef();
+    const barcodeRef = useRef();
     const itemRef = useRef();
     const quantityRef = useRef();
     const measureRef = useRef();
@@ -20,6 +21,7 @@ const InventoryTable = (props) => {
 
     const [filter, setFilter] = useState({
         id: "",
+        barcode: "",
         item: "",
         quantity: "",
         measure: "",
@@ -35,6 +37,7 @@ const InventoryTable = (props) => {
         }
         return (<tr key={inventory.id} onClick={ props.onInventoryClick.bind(null, inventory)} className={selectedStyle}>
             <td>{inventory.id}</td>
+            <td>{inventory.Item.barcode}</td>
             <td>{inventory.Item.name}</td>
             <td>{inventory.quantity}</td>
             <td>{inventory.Item.Measure.name}</td>
@@ -46,6 +49,7 @@ const InventoryTable = (props) => {
     const filteredInventory = resultInventory.filter((inventory) => {
 
         if (inventory.id.toString().includes(filter.id) &&
+            inventory.Item.barcode.toString().includes(filter.barcode) &&
                 inventory.shelflevel.toString().includes(filter.level) &&
                 inventory.quantity.toString().includes(filter.quantity) &&
                 inventory.Item.name.toLowerCase().includes(filter.item.toLowerCase()) &&
@@ -89,6 +93,7 @@ const InventoryTable = (props) => {
         if (event.keyCode === 13) {         
             setFilter({
                 id: idRef.current.value,
+                barcode: barcodeRef.current.value,
                 item: itemRef.current.value,
                 quantity: quantityRef.current.value,
                 measure: measureRef.current.value,
@@ -101,6 +106,7 @@ const InventoryTable = (props) => {
     const searchOnClickHandler = () => {
         setFilter({
             id: idRef.current.value,
+            barcode: barcodeRef.current.value,
             item: itemRef.current.value,
             quantity: quantityRef.current.value,
             measure: measureRef.current.value,
@@ -119,6 +125,7 @@ const InventoryTable = (props) => {
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Barcode</th>
                             <th>Item</th>
                             <th>Quantity</th>
                             <th>Measure</th>
@@ -127,6 +134,7 @@ const InventoryTable = (props) => {
                         </tr>
                         <tr className={style.filterRow}>
                             <td><input type='text' placeholder='ID' ref={idRef} onKeyDown={searchOnKeyDownHandler}/></td>
+                            <td><input type='text' placeholder='Barcode' ref={barcodeRef} onKeyDown={searchOnKeyDownHandler}/></td>
                             <td><input type='text' placeholder='Item' ref={itemRef} onKeyDown={searchOnKeyDownHandler}/></td>
                             <td><input type='text' placeholder='Quantity' ref={quantityRef} onKeyDown={searchOnKeyDownHandler}/></td>
                             <td><input type='text' placeholder='Measure' ref={measureRef} onKeyDown={searchOnKeyDownHandler}/></td>
