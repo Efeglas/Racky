@@ -17,6 +17,8 @@ import UserInfo, {loader as adminsLoader} from "./pages/UserInfo";
 import Layout from "./pages/Layout";
 import Items from "./pages/Items";
 import Inventory from "./pages/Inventory";
+import Order from "./pages/Order";
+import SpecificOrder from "./pages/SpecificOrder";
 
 const router = createBrowserRouter([
   {path: "/login", element: <Login />},
@@ -30,6 +32,8 @@ const router = createBrowserRouter([
     {path: "/profile", element: <Profile />, loader: userDataLoader},
     {path: "/items", element: <Items />},
     {path: "/inventory", element: <Inventory />},
+    {path: "/order", element: <Order />},
+    {path: "/order/:id", element: <SpecificOrder />}
   ]},
 ]);
 
