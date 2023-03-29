@@ -55,6 +55,11 @@ const SideNavigation = (props) => {
               <NavLink to="/inventory">Invetory</NavLink>
             </li>
           </PrivateLink>
+          <PrivateLink permission={[6]}>
+            <li onClick={props.onOpen}>
+              <NavLink to="/order">Order</NavLink>
+            </li>
+          </PrivateLink>
           <li onClick={props.onLogout}>
             <button type='button'>Logout</button>
           </li>
