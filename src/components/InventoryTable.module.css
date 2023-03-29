@@ -121,9 +121,15 @@
     width: 100%;
 }
 
+.filterRow select{
+    width: 100%;
+}
+
 .filterRow .last input{
     width: 80%;
 }
+
+
 
 .filterRow .last button{
     width: 20%;
@@ -131,4 +137,43 @@
 
 .selected {
     background-color: #3498db65 !important;
+}
+
+.order {
+    cursor: pointer;
+}
+
+.cin {
+    color: #2980b9;
+    display: inline;
+}
+
+.cout {
+    color: #27ae60;
+    display: inline;
+}
+
+.cin:hover,
+.cout:hover {
+    cursor: help;
+}
+
+.ticketCreated {
+    background-color: goldenrod;
+    color: white;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 600;
+    width: 70px;
+    text-align: center;
+}
+
+.ticketClosed {
+    background-color: #27ae60;
+    color: white;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 600;
+    width: 70px;
+    text-align: center;
 }
