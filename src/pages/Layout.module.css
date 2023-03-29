@@ -74,7 +74,7 @@ input:focus {
 
 .btn:disabled {
     background-color:#bdc3c7 !important;
-    color: black !important;
+    color: grey !important;
 }
 
 .btn:disabled:hover {
