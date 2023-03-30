@@ -1,10 +1,12 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState, Fragment } from "react";
 import style from './SpecificOrder.module.css';
 import Loader from '../components/loader/Loader';
 import Icon from "../icons/Icon";
 import useModal from '../hooks/use-Modal';
 import Modal from '../components/modal/Modal';
+import useInput from "../hooks/use-Input";
+import { toast } from 'react-toastify';
 
 const SpecificOrder = () => {
 
@@ -12,12 +14,56 @@ const SpecificOrder = () => {
     const [resultOrder, setResultOrder] = useState();
     const [orderItems, setOrderItems] = useState([]);
     const [items, setItems] = useState([]);
+    const [shelves, setShelves] = useState([]);
+    const [orderIsClosed, setOrderIsClosed] = useState(false);
+
+    const [selectedShelf, setSelectedShlef] = useState(0);
+    const [selectedShelfLevel, setSelectedShlefLevel] = useState(0);
+    const [selectedItem, setSelectedItem] = useState(0);
+    const [selectedItemMeasure, setSelectedItemMeasure] = useState("-");
+
+    const [selectedOrderItem, setSelectedOrderItem] = useState({});
+    const [isEdit, setIsEdit] = useState(false);
+
+    const [deletingOrder, setDeletingOrder] = useState(false);
+
+    const [closeErrorArray, setCloseErrorArray] = useState([]);
+
+    const navigate = useNavigate();
 
     const {
         isShown: isShownAddModal,
         hide: hideAddModal,
         show: showAddModal
     } = useModal();
+
+    const {
+        isShown: isShownDeleteModal,
+        hide: hideDeleteModal,
+        show: showDeleteModal
+    } = useModal();
+
+    const {
+        isShown: isShownCloseModal,
+        hide: hideCloseModal,
+        show: showCloseModal
+    } = useModal();
+
+    const {
+        isShown: isShownErrorModal,
+        hide: hideErrorModal,
+        show: showErrorModal
+    } = useModal();
+
+    const {
+        value: qtyEnteredValue,
+        setValue: setqtyEnteredValue,
+        isValid: qtyIsValid,
+        hasError: qtyHasError,
+        changeHandler: qtyChangeHandler,
+        blurHandler:qtyBlurHandler,
+        reset: qtyReset,
+    } = useInput(value => value.toString().trim() !== "");
 
     const loadOrder = async () => {
 
@@ -41,9 +87,39 @@ const SpecificOrder = () => {
         const jsonItems = await responseItems.json();
         console.log(jsonItems);
 
+        const responseShelves = await fetch("http://192.168.50.62:8080/layout/shelves/all", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({token: localStorage.getItem("token")}) 
+        });
+        const jsonShelves = await responseShelves.json();
+        console.log(jsonShelves);
+
         setResultOrder(json.data); 
         setOrderItems(json.data.OrderItems);
         setItems(jsonItems.data);
+        setShelves(jsonShelves.data);
+
+        if (json.data.closed !== null) {
+            
+            setOrderIsClosed(true);
+        }
+    }
+
+    const loadOrderItems = async () => {
+
+        const response = await fetch("http://192.168.50.62:8080/order/" + orderId + "/orderitems", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({token: localStorage.getItem("token")}) 
+        });
+        const json = await response.json();
+        console.log(json);
+        setOrderItems(json.data);
     }
 
     useEffect(() => {
@@ -51,7 +127,273 @@ const SpecificOrder = () => {
     }, []);
 
     const addItemOnClickHandler = () => {
+        setIsEdit(false);
+        setSelectedItem(0);
+        setSelectedShlef(0);
+        setSelectedShlefLevel(0);
+        setSelectedItemMeasure("-");
+        qtyReset();
         showAddModal();
+    }
+
+    const addItemToDBClickHandler = async () => {
+       
+        const response = await fetch("http://192.168.50.62:8080/order/orderitem/add", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: localStorage.getItem("token"), 
+                order: orderId,             
+                item: selectedItem,
+                shelf: selectedShelf,
+                shelflevel: selectedShelfLevel,
+                quantity: qtyEnteredValue,
+            }) 
+        });
+        const json = await response.json();
+        console.log(json);
+
+        if (response.ok) {
+            toast.success('Order item added', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            setSelectedItem(0);
+            setSelectedShlef(0);
+            setSelectedShlefLevel(0);
+            setSelectedItemMeasure("-");
+            qtyReset();
+            loadOrderItems();
+        } else {
+            toast.error(json.message, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }        
+        hideAddModal();
+    }
+
+    const editItemToDBClickHandler = async () => {
+
+        const response = await fetch("http://192.168.50.62:8080/order/orderitem/edit", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: localStorage.getItem("token"), 
+                order: orderId,             
+                item: selectedItem,
+                shelf: selectedShelf,
+                shelflevel: selectedShelfLevel,
+                quantity: qtyEnteredValue,
+            }) 
+        });
+        const json = await response.json();
+        console.log(json);
+
+        if (response.ok) {
+            toast.success('Order item edited', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            
+            loadOrderItems();
+        } else {
+            toast.error(json.message, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }        
+        hideAddModal();
+    }
+
+    const selectItemChangeHandler = (event) => {
+        setSelectedItem(event.target.value);
+        const item = items.find((item) => {
+            if (item.id == event.target.value) {
+                return true;
+            }
+            return false;
+        })
+        setSelectedItemMeasure(item.Measure.name);
+    }
+
+    const selectShelfChangeHandler = (event) => {
+        setSelectedShlefLevel(0);  
+        setSelectedShlef(event.target.value);
+    }
+
+    const selectShelfLevelChangeHandler = (event) => {
+        setSelectedShlefLevel(event.target.value);
+    }
+
+    const deleteOrderItemFromDBClickHandler = async () => {
+        
+        const response = await fetch("http://192.168.50.62:8080/order/orderitem/delete", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: localStorage.getItem("token"), 
+                orderitem: selectedOrderItem.id,                            
+            }) 
+        });
+        const json = await response.json();
+        console.log(json);
+
+        if (response.ok) {
+            toast.success('Order item deleted', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });          
+            loadOrderItems();
+        } else {
+            toast.error(json.message, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }        
+        hideDeleteModal();
+    }
+
+    const initDeleteOrderHandler = () => {
+        setDeletingOrder(true);
+        showDeleteModal();
+    }
+
+    const deleteOrderFromDBHandler = async () => {
+        const response = await fetch("http://192.168.50.62:8080/order/delete", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: localStorage.getItem("token"), 
+                order: orderId,                            
+            }) 
+        });
+        const json = await response.json();
+        console.log(json);
+
+        if (response.ok) {
+            toast.success('Order deleted', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });          
+            navigate('/order');
+        } else {
+            toast.error(json.message, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        }        
+        hideDeleteModal();
+    }
+
+    const closeOrderClickHandler = () => {
+        showCloseModal();
+    }
+
+    const closeOrderHandler = async () => {
+
+        const response = await fetch("http://192.168.50.62:8080/order/close", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: localStorage.getItem("token"), 
+                order: orderId,                            
+            }) 
+        });
+        const json = await response.json();
+        console.log(json);
+
+        if(json.error !== undefined && json.error.length > 0) {
+            setCloseErrorArray(json.error);
+            hideCloseModal();
+            showErrorModal();
+        } else {
+
+            if (response.ok) {
+                 toast.success('Order closed', {
+                     position: "top-right",
+                     autoClose: 3000,
+                     hideProgressBar: false,
+                     closeOnClick: true,
+                     pauseOnHover: true,
+                     draggable: true,
+                     progress: undefined,
+                     theme: "light",
+                 });          
+                 loadOrder();
+             } else {
+                 toast.error(json.message, {
+                     position: "top-right",
+                     autoClose: 3000,
+                     hideProgressBar: false,
+                     closeOnClick: true,
+                     pauseOnHover: true,
+                     draggable: true,
+                     progress: undefined,
+                     theme: "light",
+                 });
+             }        
+             hideCloseModal();
+        }
+
     }
 
     if (resultOrder !== undefined) {
@@ -75,6 +417,24 @@ const SpecificOrder = () => {
             direction = <span className={style.cout} title='ORDER OUT'><Icon size='20' icon='orderout'/> (ORDER OUT)</span>;
         } 
 
+        const editOrderItemClickHandler = (orderitem) => {   
+               
+            setIsEdit(true);
+            setSelectedItem(orderitem.Item.id);
+            setSelectedOrderItem(orderitem);
+            setSelectedItemMeasure(orderitem.Item.Measure.name);
+            setSelectedShlef(orderitem.Shelf.id);  
+            setSelectedShlefLevel(orderitem.shelflevel);         
+            setqtyEnteredValue(orderitem.quantity);
+            showAddModal();
+        }
+
+        const deleteOrderItemClickHandler = (orderitem) => {
+            setSelectedOrderItem(orderitem);
+            setDeletingOrder(false);
+            showDeleteModal();
+        }
+
         let itemsJSX = <tr><td colSpan={7}></td></tr>;
         if (orderItems.length > 0) {
             itemsJSX = orderItems.map((item) => {
@@ -84,50 +444,146 @@ const SpecificOrder = () => {
                         <td>{item.Item.barcode}</td>
                         <td>{item.Item.name}</td>
                         <td>{item.Shelf.name}</td>
+                        <td>{item.shelflevel}</td>
                         <td>{item.quantity}</td>
                         <td>{item.Item.Measure.name}</td>
-                        <td>
-                            <button className={style.btnEdit} onClick={()=>{}}><Icon size='20' icon='edit'/></button>
-                            <button className={style.btnDelete} onClick={()=>{}}><Icon size='20' icon='xmark'/></button>
-                        </td>
+                        {!orderIsClosed && <td>
+                            <button className={style.btnEdit} onClick={editOrderItemClickHandler.bind(null, item)}><Icon size='20' icon='edit'/></button>
+                            <button className={style.btnDelete} onClick={deleteOrderItemClickHandler.bind(null, item)}><Icon size='20' icon='xmark'/></button>
+                        </td>}
                     </tr>
                 );
             });
         } 
 
-        let itemOptions = [<option value='0'>Chose an item...</option>];
+        let itemOptions = [<option key={0} value='0'>Choose an item...</option>];
         if (items.length > 0) {
             items.forEach((item) => {
-                itemOptions.push(<option value={item.id}>{item.name}</option>);
+                itemOptions.push(<option key={item.id} value={item.id}>{item.name}</option>);
             });
         }
 
-        //!const levelsClass = shelfLevelHasError ? style.invalid : ""; 
+        let shelfOptions = [<option  key={0} value='0'>Choose a shelf...</option>];
+        if (shelves.length > 0) {
+            shelves.forEach((shelf) => {
+                shelfOptions.push(<option key={shelf.id} value={shelf.id}>{shelf.name}</option>);
+            });
+        }
+
+        let shelfLevelOptions = [<option  key={0} value='0'>Choose a level...</option>];
+        if (selectedShelf !== 0) {
+            const shelfForLevel = shelves.find((shelf) => {                      
+                if (shelf.id == selectedShelf) {
+                    return true;
+                }
+                return false;
+            });
+            for (let i = 1; i <= shelfForLevel.levels; i++) {               
+                shelfLevelOptions.push(<option  key={i} value={i}>{i}</option>);
+            }
+        }
+
+        const quantityClass = qtyHasError ? style.invalid : ""; 
 
         const addModal = (
             <Modal onClose={hideAddModal}>
-                <h3 className={style.mt0}>Add item</h3>
+                <h3 className={style.mt0}>
+                    {isEdit && `Edit order item (${selectedOrderItem.id})`}
+                    {!isEdit && `Add item to order list`}
+                </h3>
                 <div className={`${style.inputGroup}`}>
                     <label>Items</label>
-                    <select>{itemOptions}</select>
+                    <select value={selectedItem} onChange={selectItemChangeHandler}>{itemOptions}</select>
+                    <p>The field cannot be empty</p>
+                </div>
+                <div className={`${style.inputGroup}`}>
+                    <label>Shelf</label>
+                    <select value={selectedShelf} onChange={selectShelfChangeHandler}>{shelfOptions}</select>
+                    <p>The field cannot be empty</p>
+                </div>
+                <div className={`${style.inputGroup}`}>
+                    <label>Shelf level</label>
+                    <select value={selectedShelfLevel} onChange={selectShelfLevelChangeHandler}>{shelfLevelOptions}</select>
+                    <p>The field cannot be empty</p>
+                </div>
+                <div className={`${style.inputGroup} ${quantityClass}`}>
+                    <label>Quantity ({selectedItemMeasure})</label>
+                    <input type="text" onInput={qtyChangeHandler} onBlur={qtyBlurHandler} value={qtyEnteredValue}/>
                     <p>The field cannot be empty</p>
                 </div>
                 <div className={style.formBtns}>
-                    <button className={`${style.btn} ${style.btnSuccess}`} onClick={()=>{}}>Add item</button>
+                    {isEdit && <button className={`${style.btn} ${style.btnSuccess}`} onClick={editItemToDBClickHandler}>Save</button>}
+                    {!isEdit && <button className={`${style.btn} ${style.btnSuccess}`} onClick={addItemToDBClickHandler}>Add item</button>}                 
                     <button className={`${style.btn} ${style.btnDefault}`} onClick={hideAddModal}>Cancel</button>
                 </div>
+            </Modal>
+        );
+
+        const deleteModal = (
+            <Modal onClose={hideDeleteModal}>               
+                <Fragment>
+                    <h3 className={style.mt0}>
+                        {!deletingOrder && `Delete order item (${selectedOrderItem.id})`}
+                        {deletingOrder && `Delete order`}
+                    </h3>
+                    <p>Are you sure you want to delete this order {!deletingOrder && `item`}?</p>
+                    <div className={style.formBtns}>
+                        {deletingOrder && <button className={`${style.btn} ${style.btnDanger}`} onClick={deleteOrderFromDBHandler}>Delete</button>}
+                        {!deletingOrder && <button className={`${style.btn} ${style.btnDanger}`} onClick={deleteOrderItemFromDBClickHandler}>Delete</button>}                       
+                        <button className={`${style.btn} ${style.btnDefault}`} onClick={hideDeleteModal}>Cancel</button>
+                    </div>
+                </Fragment>               
+            </Modal>
+        );
+
+        const confirmModal = (
+            <Modal onClose={hideCloseModal}>               
+                <Fragment>
+                    <h3 className={style.mt0}>
+                        Close order
+                    </h3>
+                    <p>Are you sure you want to close this order? This will make item movements!</p>
+                    <div className={style.formBtns}>
+                        <button className={`${style.btn} ${style.btn}`} onClick={closeOrderHandler}>Close</button>                                          
+                        <button className={`${style.btn} ${style.btnDefault}`} onClick={hideCloseModal}>Cancel</button>
+                    </div>
+                </Fragment>               
+            </Modal>
+        );
+
+        let closeErrors = [];
+        closeErrors = closeErrorArray.map((error, index) => {
+            return <li key={index}>{error}</li>
+        });
+
+        const closeErrorModal = (
+            <Modal onClose={hideErrorModal}>               
+                <Fragment>
+                    <h3 className={style.mt0}>
+                        Can not close order
+                    </h3>
+                    <ul className={style.closeErrorUl}>
+                        {closeErrors}
+                    </ul>
+                    <div className={style.formBtns}>                                                            
+                        <button className={`${style.btn} ${style.btnDefault}`} onClick={hideErrorModal}>Ok</button>
+                    </div>
+                </Fragment>               
             </Modal>
         );
     
         return (
             <div className={style.container}>
                 {isShownAddModal && addModal}
+                {isShownDeleteModal && deleteModal}
+                {isShownCloseModal && confirmModal}
+                {isShownErrorModal && closeErrorModal}
                 <div className={style.box}>
-                    <div className={style.floatR}>
+                    {!orderIsClosed && <div className={style.floatR}>
                         <button className={`${style.btn} ${style.btnSuccess}`} onClick={addItemOnClickHandler}>Add item</button>
-                        <button className={`${style.btn}`} disabled={orderItems.length === 0}>Close</button>                                          
-                        <button className={`${style.btn} ${style.btnDanger}`}>Delete order</button>
-                    </div>
+                        <button className={`${style.btn}`} disabled={orderItems.length === 0} onClick={closeOrderClickHandler}>Close</button>                                          
+                        <button className={`${style.btn} ${style.btnDanger}`} onClick={initDeleteOrderHandler}>Delete order</button>
+                    </div>}
                     <h3 className={style.mt0}>Order ({resultOrder.id})</h3>
                     <div className={style.datas}>
                         <div>
@@ -150,6 +606,7 @@ const SpecificOrder = () => {
                                 <th>Barcode</th>
                                 <th>Item</th>
                                 <th>Shelf</th>
+                                <th>Shelf level</th>
                                 <th>Quantity</th>
                                 <th>Measure</th>
                                 <th>Action</th>
