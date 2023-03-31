@@ -7,7 +7,6 @@ import Modal from '../components/modal/Modal';
 import useInput from '../hooks/use-Input';
 import useCustomFetch from '../hooks/use-CustomFetch';
 
-
 const Users = () => {
 
     const [resultUsers, setResultUsers] = useState();
@@ -21,7 +20,7 @@ const Users = () => {
     const [isLocked, setIsLocked] = useState(true);
     const [isEdit, setIsEdit] = useState(true);
 
-    const customeFetch = useCustomFetch();
+    const customFetch = useCustomFetch();
 
     const {
         isShown: isShownEditModal,
@@ -154,20 +153,12 @@ const Users = () => {
 
     const deleteOnClickHandler = async () => {
 
-        const data = {
-            token: localStorage.getItem("token"),
-            id: selectedUser.id,             
-        };
+        const data = {token: localStorage.getItem("token"),id: selectedUser.id};
 
-        const afterSuccess = () => {
-            loadUsers();
-        }
+        const afterSuccess = () => {loadUsers();}
+        const generalEnd = () => {hideDeleteModal();}
 
-        const generalEnd = () => {
-            hideDeleteModal();
-        }
-
-        customeFetch("/user/delete", data, "DELETE", afterSuccess, generalEnd);      
+        customFetch("/user/delete", data, "DELETE", afterSuccess, generalEnd);      
     }
 
     const saveEditOnClickHandler = async () => {
@@ -182,15 +173,10 @@ const Users = () => {
             role:selectedRoleValue,
         };
 
-        const afterSuccess = () => {
-            loadUsers();
-        }
+        const afterSuccess = () => {loadUsers();}
+        const generalEnd = () => {hideEditModal();}
 
-        const generalEnd = () => {
-            hideEditModal();
-        }
-
-        customeFetch("/user/edit", data, "PATCH", afterSuccess, generalEnd);        
+        customFetch("/user/edit", data, "PATCH", afterSuccess, generalEnd);        
     }
 
     const registerOnClickHandler = async () => {
@@ -204,15 +190,10 @@ const Users = () => {
             role:selectedRoleValue,
         };
 
-        const afterSuccess = () => {
-            loadUsers();
-        }
+        const afterSuccess = () => {loadUsers();}
+        const generalEnd = () => {hideEditModal();}
 
-        const generalEnd = () => {
-            hideEditModal();
-        }
-
-        customeFetch("/user/register", data, "POST", afterSuccess, generalEnd);       
+        customFetch("/user/register", data, "POST", afterSuccess, generalEnd);       
     }
 
     const initResetPassClickHandler = () => {
@@ -222,24 +203,14 @@ const Users = () => {
 
     const finalizeResetPassClickHandler = async () => {
 
-        const data = {
-            token: localStorage.getItem("token"),              
-            id: selectedUser.id,
-            username: selectedUser.username
-        };
+        const data = {token: localStorage.getItem("token"), id: selectedUser.id, username: selectedUser.username};
+        
+        const afterSuccess = () => {loadUsers();}
+        const generalEnd = () => {hideConfirmModal();}
 
-        const afterSuccess = () => {
-            loadUsers();
-        }
-
-        const generalEnd = () => {
-            hideConfirmModal();
-        }
-
-        customeFetch("/user/password/reset", data, "POST", afterSuccess, generalEnd);      
+        customFetch("/user/password/reset", data, "POST", afterSuccess, generalEnd);      
     }
 
-    //? PAGE REG BUTTON
     const userRegOnClickHandler = () => {
         setIsEdit(false);
         setIsLocked(false);
@@ -283,12 +254,6 @@ const Users = () => {
         });
     }
 
-    let selectOptions = <option>No data awailable...</option>;
-
-    if (resultRoles !== undefined) {
-        selectOptions = generateSelectOptions(resultRoles);
-    }
-
     const filterIsInUserObj = (user) => {
 
         const filterLowerCase = userFilter.toLowerCase();
@@ -305,6 +270,20 @@ const Users = () => {
             return false;
     }
 
+    const unlockClickHandler = () => {
+        setIsLocked(!isLocked);
+    }
+
+    const selectOnChangeHandler = (event) => {
+        setSelectedRoleValue(event.target.value);
+    }
+
+    let selectOptions = <option>No data awailable...</option>;
+
+    if (resultRoles !== undefined) {
+        selectOptions = generateSelectOptions(resultRoles);
+    }
+
     let tbody = <tr><td colSpan='4' className={style.textCenter}>No data available...</td></tr>;
 
     if (resultUsers !== undefined) {
@@ -317,13 +296,7 @@ const Users = () => {
         }
     }
 
-    const unlockClickHandler = () => {
-        setIsLocked(!isLocked);
-    }
-
-    const selectOnChangeHandler = (event) => {
-        setSelectedRoleValue(event.target.value);
-    }
+    
 
      const firstNameClass = firstNameHasError && !isLocked ? style.invalid : "";
      const lastNameClass = lastNameHasError && !isLocked? style.invalid : "";
