@@ -4,7 +4,8 @@ import Icon from "../icons/Icon";
 import Modal from "../components/modal/Modal";
 import useModal from "../hooks/use-Modal";
 import useInput from "../hooks/use-Input";
-import { toast } from 'react-toastify';
+import useCustomFetch from '../hooks/use-CustomFetch';
+import useToast from "../hooks/use-Toast";
 
 const Layout = () => {
 
@@ -28,6 +29,9 @@ const Layout = () => {
 
     const [deleteMode, setDeleteMode] = useState('shelf');
     const [isEditShelf, setIsEditShelf] = useState(false);
+
+    const customFetch = useCustomFetch();
+    const fireToast = useToast();
     
     const {
         isShown: isShownAddLayoutModal,
@@ -219,7 +223,6 @@ const Layout = () => {
         }
 
         for (const block of shelfBlocks) {
-            console.log(grid, block.x, block.y);
             if (grid[block.x][block.y].shelf !== null) {
                 return false;
             }
@@ -229,51 +232,25 @@ const Layout = () => {
 
     const saveShelf = async (sortedCoords) => {
 
-        const response = await fetch("http://192.168.50.62:8080/layout/shelves/add", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),              
-                name: shelfNameEnteredValue,
-                levels: shelfLevelEnteredValue,
-                x1: sortedCoords.x1,
-                y1: sortedCoords.y1,
-                x2: sortedCoords.x2,
-                y2: sortedCoords.y2,
-                LayoutId: selectedLayout
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
+        const data = {
+            token: localStorage.getItem("token"),              
+            name: shelfNameEnteredValue,
+            levels: shelfLevelEnteredValue,
+            x1: sortedCoords.x1,
+            y1: sortedCoords.y1,
+            x2: sortedCoords.x2,
+            y2: sortedCoords.y2,
+            LayoutId: selectedLayout
+        };
 
-        if (response.ok) {
-            toast.success('Shelf added', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+        const afterSuccess = () => {
             shelfNameReset();
             shelfLevelReset();
             loadShelfs();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }        
+        }
+        const generalEnd = () => {}
+
+        customFetch("/layout/shelves/add", data, "POST", afterSuccess, generalEnd); 
     };
 
     useEffect(() => {
@@ -289,27 +266,9 @@ const Layout = () => {
             if ( validateShelfPlacement(coordsSorted)) {
                 saveShelf(coordsSorted);
             } else if (coordsSorted === null) {
-                toast.error("Wrong placement", {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                });
+                fireToast("Wrong placement", "error");             
             } else {
-                toast.error("Shelf collision", {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                });
+                fireToast("Shelf collision", "error");             
             }
 
             setIsShelfPlacing(false);
@@ -317,7 +276,7 @@ const Layout = () => {
     }, [shelfCoords]);
 
     const renderLayoutGrid = () => {
-        console.log("renderLayoutGrid");
+       
         const heightElementArray = [];
         for (let i = 0; i < grid.length; i++) {
             const widthElementArray = [];
@@ -390,47 +349,17 @@ const Layout = () => {
 
     const addLayoutCLickHandler = async () => {
 
-        const response = await fetch("http://192.168.50.62:8080/layout/add", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),              
-                name: layoutEnteredValue,
-                width: widthEnteredValue,
-                height: heightEnteredValue
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
+        const data = {
+            token: localStorage.getItem("token"),              
+            name: layoutEnteredValue,
+            width: widthEnteredValue,
+            height: heightEnteredValue
+        };
 
-        if (response.ok) {
-            toast.success('Layout added', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadLayouts();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
+        const afterSuccess = () => {loadLayouts();}
+        const generalEnd = () => {hideAddLayoutModal();}
 
-        hideAddLayoutModal();
+        customFetch("/layout/add", data, "POST", afterSuccess, generalEnd); 
     }
 
     useEffect(() => {
@@ -448,10 +377,61 @@ const Layout = () => {
     useEffect(() => {
         renderLayoutGrid();
     }, [grid, selectedShelf]);
-    
+
+    const layoutDeleteClickHandler = () => {
+        setDeleteMode("layout");
+        showDeleteModal();
+    }
+
+    const addShelfClickHandler = () => {
+        shelfNameReset();
+        shelfLevelReset();
+        showAddShelfModal();
+        setIsEditShelf(false);
+    }
+
+    const deleteLayoutClickHandler = async () => {
+
+        const data = {token: localStorage.getItem("token"), id: selectedLayout};
+
+        const afterSuccess = () => {loadLayouts();}
+        const generalEnd = () => {hideDeleteModal();}
+
+        customFetch("/layout/delete", data, "DELETE", afterSuccess, generalEnd); 
+    }
+
+    const deleteShelfClickHandler = async () => {
+
+        const data = {token: localStorage.getItem("token"), id: selectedShelf};
+
+        const afterSuccess = () => {loadShelfs();}
+        const generalEnd = () => {hideDeleteModal();}
+
+        customFetch("/layout/shelves/delete", data, "DELETE", afterSuccess, generalEnd); 
+    }
+
+    const saveNewNameForShelf = async () => {
+        
+        const data = {
+            token: localStorage.getItem("token"),   
+            id: selectedShelf,           
+            name: shelfNameEnteredValue,              
+        };
+
+        const afterSuccess = () => {loadShelfs();}
+        const generalEnd = () => {hideAddShelfModal();}
+
+        customFetch("/layout/shelves/edit", data, "PATCH", afterSuccess, generalEnd); 
+    }
+
     const layoutClass = layoutHasError ? style.invalid : "";
     const widthClass = widthHasError ? style.invalid : "";
     const heightClass = heightHasError ? style.invalid : "";
+
+    const placingShelfClass = isShelfPlacing ? `${style.container} ${style.placingShelf}`: style.container;
+
+    const shelfClass = shelfNameHasError ? style.invalid : "";
+    const levelsClass = shelfLevelHasError ? style.invalid : "";  
 
     const addLayoutModal = (
         <Modal onClose={hideAddLayoutModal}>
@@ -478,53 +458,6 @@ const Layout = () => {
         </Modal>
     );
 
-    const saveNewNameForShelf = async () => {
-        
-        const response = await fetch("http://192.168.50.62:8080/layout/shelves/edit", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),   
-                id: selectedShelf,           
-                name: shelfNameEnteredValue,              
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
-
-        if (response.ok) {
-            toast.success('Shelf edited', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadShelfs();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
-
-        hideAddShelfModal();
-    }
-
-    const shelfClass = shelfNameHasError ? style.invalid : "";
-    const levelsClass = shelfLevelHasError ? style.invalid : "";  
-
     const addShelfModal = (
         <Modal onClose={hideAddShelfModal}>
             {isEditShelf && <h3 className={style.mt0}>Edit shelf</h3>}
@@ -546,90 +479,6 @@ const Layout = () => {
             </div>
         </Modal>
     );
-
-    const deleteLayoutClickHandler = async () => {
-        const response = await fetch("http://192.168.50.62:8080/layout/delete", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),              
-                id: selectedLayout
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
-
-        if (response.ok) {
-            toast.success('Layout deleted', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadLayouts();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
-
-        hideDeleteModal();
-    }
-
-    const deleteShelfClickHandler = async () => {
-        const response = await fetch("http://192.168.50.62:8080/layout/shelves/delete", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),              
-                id: selectedShelf
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
-
-        if (response.ok) {
-            toast.success('Shelf deleted', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadShelfs();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
-
-        hideDeleteModal();
-    }
 
     const deleteModal = (
         <Modal onClose={hideDeleteModal}>
@@ -653,20 +502,6 @@ const Layout = () => {
             </Fragment>}
         </Modal>
     );
-
-    const placingShelfClass = isShelfPlacing ? `${style.container} ${style.placingShelf}`: style.container;
-
-    const layoutDeleteClickHandler = () => {
-        setDeleteMode("layout");
-        showDeleteModal();
-    }
-
-    const addShelfClickHandler = () => {
-        shelfNameReset();
-        shelfLevelReset();
-        showAddShelfModal();
-        setIsEditShelf(false);
-    }
     
     return (
         <Fragment>

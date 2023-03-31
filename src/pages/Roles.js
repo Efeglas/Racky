@@ -6,18 +6,18 @@ import useModal from "../hooks/use-Modal";
 import useInput from "../hooks/use-Input";
 import Modal from '../components/modal/Modal'
 import Loader from "../components/loader/Loader";
-import { toast } from 'react-toastify';
+import useCustomFetch from '../hooks/use-CustomFetch';
 
 const Roles = () => {
 
-    //const {roles, permissions} = useLoaderData();
     const [selectedRole, setSelectedRole] = useState({id: null, name: null, Permissions: null});
     const navigate = useNavigate();
     const [permissionData, setPermissionData] = useState();
     const [roleData, setRoleData] = useState();
     const [permCheckList, setPermCheckList] = useState();
     const [isAddRole, setIsAddRole] = useState(false);
-    //console.log(permissionData);
+    
+    const customFetch = useCustomFetch();
 
     const loadPermissions = async () => {
         const response = await fetch("http://192.168.50.62:8080/role/permissions", {
@@ -36,8 +36,6 @@ const Roles = () => {
             obj[element.id] = {...element, value: false};
         });
         setPermCheckList(obj);
-
-        //return json;
     }
 
     const loadRoles = async () => {
@@ -51,13 +49,9 @@ const Roles = () => {
             const json = await response.json();
             console.log(json);
             setRoleData(json.data);
-            //return json;
     }
 
-    
-
     useEffect(() => {
-        //setPermissionData(permissions);
         loadPermissions();
         loadRoles();
     }, []);
@@ -105,24 +99,15 @@ const Roles = () => {
         
     }
 
-   /*  if (permissionData !== undefined) {
-        
-        let permissionList = <p className={style.textCenter}>No data available...</p>;
-    } */
-   
     const checklistClickHandler = (role) => {
         setSelectedRole(role);
         showPermissionModal();
 
-  //      permCheckList
-//setPermCheckList
-        //console.log(permCheckList);
         const newPermObj = {};
         const rolePermArray = role.Permissions.map((p) => {
             return p.id;
         });
 
-        //console.log(rolePermArray);
         for (const key in permCheckList) {
 
             newPermObj[key] = permCheckList[key];
@@ -134,45 +119,7 @@ const Roles = () => {
         }
 
         setPermCheckList(newPermObj);
-
-        /* if (permissionData !== undefined && permissionData.length > 0) {
-            
-            setPermCheckList(permissionData.map((permission) => {
-                return (<div>
-                    <label htmlFor={`permCheck${permission.id}`}>{permission.name}</label>
-                    <input type='checkbox' name={`permCheck${permission.id}`} checked={rolePermArray.includes(permission.id) ? true : false}/>
-                </div>);
-            }));
-            //console.log(permissionList);
-        }  */
-        /* console.log(permissionData);
-        
-        console.log(permissions);
-        permissionJSX = <Suspense fallback={<Loader />}>
-            <Await resolve={permissions} errorElement={<p colSpan='3' className={style.textCenter}>Can't load data...</p>} children={
-                (loadedData) => {     
-                    if (loadedData.data !== undefined && loadedData.data.length > 0) {
-                        return permissions.data.map((permission) => {
-                            return (<div>
-                                <label htmlFor={`permCheck${permission.id}`}>{permission.name}</label>
-                                <input type='checkbox' name={`permCheck${permission.id}`} checked={rolePermArray.includes(permission.id) ? true : false}/>
-                            </div>);
-                        });
-                    } else {
-                        return (<tr><td colSpan='3' className={style.textCenter}>No data available...</td></tr>);
-                    }
-                }
-            }/>
-        </Suspense> */
-        /* permissionJSX = permissions.data.map((permission) => {
-            return (<div>
-                <label htmlFor={`permCheck${permission.id}`}>{permission.name}</label>
-                <input type='checkbox' name={`permCheck${permission.id}`} checked={rolePermArray.includes(permission.id) ? true : false}/>
-            </div>);
-        }); */
     }
-    console.log(permCheckList);
-    //console.log(permissionList);
 
     const editSaveOnClickHandler = async () => {
 
@@ -180,83 +127,26 @@ const Roles = () => {
             return;
         } 
 
-        const response = await fetch("http://192.168.50.62:8080/role/rename", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({token: localStorage.getItem("token"), id: selectedRole.id, name: roleNameEnteredValue}) 
-        });
-        const json = await response.json();
-        console.log(json);
-        
-        if (response.ok) {
-            toast.success('Role edited', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadRoles();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
+        const data = {token: localStorage.getItem("token"), id: selectedRole.id, name: roleNameEnteredValue};
 
-        hideEditModal();
+        const afterSuccess = () => {loadRoles();}
+        const generalEnd = () => {hideEditModal();}
+
+        customFetch("/role/rename", data, "PATCH", afterSuccess, generalEnd);  
     }
 
     const permissionSaveClickHandler = async () => {
-        console.log(permCheckList);
 
-        const response = await fetch("http://192.168.50.62:8080/role/permissions/save", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({token: localStorage.getItem("token"), role: selectedRole.id, checks: permCheckList}) 
-        });
-        const json = await response.json();
-        console.log(json);
+        if (!roleNameIsValid) {
+            return;
+        } 
 
-        if (response.ok) {
-            toast.success('Permissions saved', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadRoles();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
+        const data = {token: localStorage.getItem("token"), role: selectedRole.id, checks: permCheckList};
 
-        hidePermissionModal(); 
+        const afterSuccess = () => {loadRoles();}
+        const generalEnd = () => {hidePermissionModal();}
+
+        customFetch("/role/permissions/save", data, "POST", afterSuccess, generalEnd); 
     }
 
     const generateTRs = (data) => {
@@ -307,6 +197,31 @@ const Roles = () => {
         return jsx;
     }
 
+    const addRoleSaveClickHandler = async () => {
+
+        const data = {token: localStorage.getItem("token"), name: roleNameEnteredValue};
+
+        const afterSuccess = () => {loadRoles();}
+        const generalEnd = () => {hideEditModal();}
+
+        customFetch("/role/add", data, "POST", afterSuccess, generalEnd); 
+    }
+
+    const onDeleteRoleClickHandler = async () => {
+
+        const data = {token: localStorage.getItem("token"), role: selectedRole.id};
+
+        const afterSuccess = () => {loadRoles();}
+        const generalEnd = () => {hideDeleteModal();}
+
+        customFetch("/role/delete", data, "DELETE", afterSuccess, generalEnd); 
+    }
+
+    const addRoleClickHandler = () => {
+        setIsAddRole(true);
+        showEditModal();
+    }
+
     let tbody = <tr><td colSpan='3' className={style.textCenter}>No data available...</td></tr>;
     
     if (roleData !== undefined && roleData.length > 0) {
@@ -314,46 +229,6 @@ const Roles = () => {
     } 
 
     const roleNamePwClass = roleNameHasError ? style.invalid : "";
-
-    const addRoleSaveClickHandler = async () => {
-
-        const response = await fetch("http://192.168.50.62:8080/role/add", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({token: localStorage.getItem("token"), name: roleNameEnteredValue}) 
-        });
-        const json = await response.json();
-        console.log(json);
-
-        if (response.ok) {
-            toast.success('Role added', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadRoles();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
-
-        hideEditModal(); 
-    }
 
     const editModal = (
       <Modal onClose={hideEditModal}>
@@ -369,46 +244,6 @@ const Roles = () => {
         </div>
       </Modal>
     );
-
-    const onDeleteRoleClickHandler = async () => {
-
-        const response = await fetch("http://192.168.50.62:8080/role/delete", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({token: localStorage.getItem("token"), role: selectedRole.id}) 
-        });
-        const json = await response.json();
-        console.log(json);
-
-        if (response.ok) {
-            toast.success('Role deleted', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadRoles();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
-
-        hideDeleteModal();
-    }
 
     const deleteModal = <Modal onClose={hideDeleteModal}>
         <h3 className={style.mt0}>Delete {selectedRole.name} role</h3>
@@ -437,13 +272,6 @@ const Roles = () => {
             <button className={style.btn} onClick={permissionSaveClickHandler}>Save</button>
         </div>
     </Modal>;
-
-    const addRoleClickHandler = () => {
-        setIsAddRole(true);
-        showEditModal();
-    }
-
-    
 
     return (
         <Fragment>

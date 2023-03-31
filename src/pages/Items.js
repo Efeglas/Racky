@@ -5,7 +5,7 @@ import Icon from '../icons/Icon';
 import useModal from '../hooks/use-Modal';
 import Modal from '../components/modal/Modal';
 import useInput from '../hooks/use-Input';
-import { toast } from 'react-toastify';
+import useCustomFetch from '../hooks/use-CustomFetch';
 
 const Items = () =>{
     const [resultItems, setResultItems] = useState();
@@ -19,6 +19,8 @@ const Items = () =>{
 
     const [isLocked, setIsLocked] = useState(true);
     const [isEdit, setIsEdit] = useState(true);
+
+    const customFetch = useCustomFetch();
 
     const {
         isShown: isShownEditModal,
@@ -114,135 +116,46 @@ const Items = () =>{
 
     const deleteOnClickHandler = async () => {
         
-        const response = await fetch("http://192.168.50.62:8080/item/delete", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),
-                id: selectedItem.id,             
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
+        const data = {
+            token: localStorage.getItem("token"),
+            id: selectedItem.id,             
+        };
 
-        if (response.ok) {
-            toast.success('User deleted', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadItems();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
+        const afterSuccess = () => {loadItems();}
+        const generalEnd = () => {hideDeleteModal();}
 
-        hideDeleteModal();
+        customFetch("/item/delete", data, "DELETE", afterSuccess, generalEnd); 
     }
 
     const saveEditOnClickHandler = async () => {
-        const response = await fetch("http://192.168.50.62:8080/item/edit", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),
-                id: selectedItem.id,
-                name: itemNameEnteredValue,
-                barcode: barcodeEnteredValue,
-                measure: selectedMeasureValue
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
 
-        if (response.ok) {
-            toast.success('Item edited', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadItems();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
+        const data = {
+            token: localStorage.getItem("token"),
+            id: selectedItem.id,
+            name: itemNameEnteredValue,
+            barcode: barcodeEnteredValue,
+            measure: selectedMeasureValue
+        };
 
-        hideEditModal(); 
+        const afterSuccess = () => {loadItems();}
+        const generalEnd = () => {hideEditModal();}
+
+        customFetch("/item/edit", data, "PATCH", afterSuccess, generalEnd);
     }
 
     const addOnClickHandler = async () => {
         
-        const response = await fetch("http://192.168.50.62:8080/item/add", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),              
-                name: itemNameEnteredValue,
-                measure: selectedMeasureValue,
-                barcode: barcodeEnteredValue,
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
+        const data = {
+            token: localStorage.getItem("token"),              
+            name: itemNameEnteredValue,
+            measure: selectedMeasureValue,
+            barcode: barcodeEnteredValue,
+        };
 
-        if (response.ok) {
-            toast.success('Item added', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            loadItems();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }
+        const afterSuccess = () => {loadItems();}
+        const generalEnd = () => {hideEditModal();}
 
-        hideEditModal();  
+        customFetch("/item/add", data, "POST", afterSuccess, generalEnd);
     }
 
     const addItemOnClickHandler = () => {
@@ -304,6 +217,10 @@ const Items = () =>{
             return false;
     }
 
+    const selectOnChangeHandler = (event) => {
+        setSelectedMeasureValue(event.target.value);
+    }
+
     let tbody = <tr><td colSpan='5' className={style.textCenter}>No data available...</td></tr>;
 
     if (resultItems !== undefined) {
@@ -316,14 +233,9 @@ const Items = () =>{
         }
     }
 
-    const selectOnChangeHandler = (event) => {
-        setSelectedMeasureValue(event.target.value);
-    }
-
-     const itemNameClass = itemNameHasError && !isLocked ? style.invalid : "";
-     const barcodeClass = barcodeHasError && !isLocked ? style.invalid : "";
+    const itemNameClass = itemNameHasError && !isLocked ? style.invalid : "";
+    const barcodeClass = barcodeHasError && !isLocked ? style.invalid : "";
      
-
     const editModal = (
         <Modal onClose={hideEditModal}>
             <div className={`${style.flex} ${style.flexSpaceBetw}`}>
