@@ -96,7 +96,7 @@ const Home = () => {
                 </div>
             </div>
         </div>
-        <p className={style.data}>{event.toLocaleDateString('hu-HU', options)}</p>
+        <p className={style.data}>{event.toLocaleDateString('en-HU', options)}</p>
         </Fragment>
     );
 }
