@@ -5,7 +5,8 @@ import Icon from '../icons/Icon';
 import useModal from '../hooks/use-Modal';
 import Modal from '../components/modal/Modal';
 import useInput from '../hooks/use-Input';
-import { toast } from 'react-toastify';
+import useCustomFetch from '../hooks/use-CustomFetch';
+
 
 const Users = () => {
 
@@ -19,6 +20,8 @@ const Users = () => {
 
     const [isLocked, setIsLocked] = useState(true);
     const [isEdit, setIsEdit] = useState(true);
+
+    const customeFetch = useCustomFetch();
 
     const {
         isShown: isShownEditModal,
@@ -68,7 +71,10 @@ const Users = () => {
         changeHandler: emailChangeHandler,
         blurHandler:emailBlurHandler,
         reset: emailReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(email => {
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return pattern.test(email);
+    });
 
     const {
         value: phoneEnteredValue,
@@ -78,7 +84,10 @@ const Users = () => {
         changeHandler: phoneChangeHandler,
         blurHandler:phoneBlurHandler,
         reset: phoneReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(phoneNumber => {
+        const pattern = /^\+(?:[0-9] ?){6,14}[0-9]$/;
+        return pattern.test(phoneNumber);
+    });
 
     const loadUsers = async () => {
         const response = await fetch("http://192.168.50.62:8080/user/get", {
@@ -144,140 +153,66 @@ const Users = () => {
     }
 
     const deleteOnClickHandler = async () => {
-        
-        const response = await fetch("http://192.168.50.62:8080/user/delete", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),
-                id: selectedUser.id,             
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
 
-        if (response.ok) {
-            toast.success('User deleted', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+        const data = {
+            token: localStorage.getItem("token"),
+            id: selectedUser.id,             
+        };
+
+        const afterSuccess = () => {
             loadUsers();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
         }
 
-        hideDeleteModal();  
+        const generalEnd = () => {
+            hideDeleteModal();
+        }
+
+        customeFetch("/user/delete", data, "DELETE", afterSuccess, generalEnd);      
     }
 
     const saveEditOnClickHandler = async () => {
-        const response = await fetch("http://192.168.50.62:8080/user/edit", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),
-                id: selectedUser.id,
-                email:emailEnteredValue,
-                firstName:firstNameEnteredValue,
-                lastName:lastNameEnteredValue,
-                phone:phoneEnteredValue,
-                role:selectedRoleValue,
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
 
-        if (response.ok) {
-            toast.success('User edited', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+        const data = {
+            token: localStorage.getItem("token"),
+            id: selectedUser.id,
+            email:emailEnteredValue,
+            firstName:firstNameEnteredValue,
+            lastName:lastNameEnteredValue,
+            phone:phoneEnteredValue,
+            role:selectedRoleValue,
+        };
+
+        const afterSuccess = () => {
             loadUsers();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
         }
 
-        hideEditModal();  
+        const generalEnd = () => {
+            hideEditModal();
+        }
+
+        customeFetch("/user/edit", data, "PATCH", afterSuccess, generalEnd);        
     }
 
     const registerOnClickHandler = async () => {
         
-        const response = await fetch("http://192.168.50.62:8080/user/register", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),              
-                email:emailEnteredValue,
-                firstName:firstNameEnteredValue,
-                lastName:lastNameEnteredValue,
-                phone:phoneEnteredValue,
-                role:selectedRoleValue,
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
+        const data = {
+            token: localStorage.getItem("token"),              
+            email:emailEnteredValue,
+            firstName:firstNameEnteredValue,
+            lastName:lastNameEnteredValue,
+            phone:phoneEnteredValue,
+            role:selectedRoleValue,
+        };
 
-        if (response.ok) {
-            toast.success('User added', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+        const afterSuccess = () => {
             loadUsers();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
         }
 
-        hideEditModal();  
+        const generalEnd = () => {
+            hideEditModal();
+        }
+
+        customeFetch("/user/register", data, "POST", afterSuccess, generalEnd);       
     }
 
     const initResetPassClickHandler = () => {
@@ -286,47 +221,22 @@ const Users = () => {
     }
 
     const finalizeResetPassClickHandler = async () => {
-        
-        const response = await fetch("http://192.168.50.62:8080/user/password/reset", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"),              
-                id: selectedUser.id,
-                username: selectedUser.username
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
 
-        if (response.ok) {
-            toast.success('User password reset', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+        const data = {
+            token: localStorage.getItem("token"),              
+            id: selectedUser.id,
+            username: selectedUser.username
+        };
+
+        const afterSuccess = () => {
             loadUsers();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
         }
 
-        hideConfirmModal();
+        const generalEnd = () => {
+            hideConfirmModal();
+        }
+
+        customeFetch("/user/password/reset", data, "POST", afterSuccess, generalEnd);      
     }
 
     //? PAGE REG BUTTON
@@ -447,12 +357,12 @@ const Users = () => {
             <div className={`${style.inputGroup}  ${emailClass}`}>
                 <label>Email</label>
                 <input type="text" onInput={emailChangeHandler} onBlur={emailBlurHandler} value={emailEnteredValue} disabled={isLocked}/>
-                <p>The field cannot be empty</p>
+                <p>This is not a valid email</p>
             </div>
             <div className={`${style.inputGroup}  ${phoneClass}`}>
                 <label>Phone</label>
                 <input type="text" onInput={phoneChangeHandler} onBlur={phoneBlurHandler} value={phoneEnteredValue} disabled={isLocked}/>
-                <p>The field cannot be empty</p>
+                <p>Not valid phone number (+36XxXxxXxxx)</p>
             </div>
             <div className={style.inputGroup}>
                 <label>Role</label>
