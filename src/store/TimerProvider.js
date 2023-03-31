@@ -19,8 +19,15 @@ const TimerProvider = (props) => {
             setSeconds(seconds => seconds - 1);          
         }, 1000); 
         
+        const onEveryClickOnDom = () => {
+            setSeconds(defaultTimerValue);
+        }
+        document.addEventListener('click', onEveryClickOnDom);
 
-        return () => clearInterval(intervalId);
+        return () => {
+            clearInterval(intervalId);
+            document.removeEventListener('click', onEveryClickOnDom);
+        };
     }, [seconds]);
 
     if (seconds < 0) {
@@ -59,9 +66,7 @@ const TimerProvider = (props) => {
                 theme: "light",
                 });
             onLogoutHandler();
-        }
-        
-        
+        }        
     }
   
     if (tokenExpire !== null && tokenExpire < actualTime.getTime()) {      
