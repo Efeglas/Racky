@@ -59,6 +59,16 @@ const Items = () =>{
     } = useInput(validatePositiveNumber);
 
     const {
+        value: priceEnteredValue,
+        setValue: setpriceEnteredValue,
+        isValid: priceIsValid,
+        hasError: priceHasError,
+        changeHandler: priceChangeHandler,
+        blurHandler:priceBlurHandler,
+        reset: priceReset,
+    } = useInput(validatePositiveNumber);
+
+    const {
         value: measureEnteredValue,
         setValue: setmeasureEnteredValue,
         isValid: measureIsValid,
@@ -109,7 +119,7 @@ const Items = () =>{
         console.log(selectedItem);
         setmeasureEnteredValue(item.Measure.id);
         setbarcodeEnteredValue(item.barcode);
-        
+        setpriceEnteredValue(item.Prices[0].price);
         setitemNameEnteredValue(item.name);
 
         showEditModal();
@@ -144,10 +154,11 @@ const Items = () =>{
 
     const saveEditOnClickHandler = async () => {
 
-        if (!itemNameIsValid && !barcodeIsValid && !measureIsValid) {
+        if (!itemNameIsValid && !barcodeIsValid && !measureIsValid && !priceIsValid) {
             itemNameBlurHandler();
             barcodeBlurHandler();
             measureBlurHandler();
+            priceBlurHandler();
             return;
         }
 
@@ -156,7 +167,8 @@ const Items = () =>{
             id: selectedItem.id,
             name: itemNameEnteredValue,
             barcode: barcodeEnteredValue,
-            measure: measureEnteredValue
+            measure: measureEnteredValue,
+            price: priceEnteredValue
         };
 
         const afterSuccess = () => {loadItems();}
@@ -167,10 +179,11 @@ const Items = () =>{
 
     const addOnClickHandler = async () => {
 
-        if (!itemNameIsValid && !barcodeIsValid && !measureIsValid) {
+        if (!itemNameIsValid && !barcodeIsValid && !measureIsValid && !priceIsValid) {
             itemNameBlurHandler();
             barcodeBlurHandler();
             measureBlurHandler();
+            priceBlurHandler();
             return;
         }
         
@@ -179,6 +192,7 @@ const Items = () =>{
             name: itemNameEnteredValue,
             measure: measureEnteredValue,
             barcode: barcodeEnteredValue,
+            price: priceEnteredValue
         };
 
         const afterSuccess = () => {loadItems();}
@@ -193,6 +207,7 @@ const Items = () =>{
         measureReset("0")
         itemNameReset();
         barcodeReset();
+        priceReset();
         showEditModal();
     }
 
@@ -214,6 +229,7 @@ const Items = () =>{
                     <td>{item.barcode}</td>
                     <td>{item.name}</td>
                     <td>{item.Measure.name}</td>
+                    <td>{`${item.Prices[0].price} Ft`}</td>
                     <td>                     
                         <button className={style.btnEdit} title='Edit' onClick={userEditOnClickHandler.bind(null, item)}><Icon size='20' icon='edit'/></button>
                         <button className={style.btnDelete} title='Delete' onClick={userDeleteOnClickHandler.bind(null, item)}><Icon size='20' icon='trash'/></button>
@@ -239,7 +255,8 @@ const Items = () =>{
         const filterLowerCase = itemFilter.toLowerCase();
 
         if (item.name.toLowerCase().includes(filterLowerCase) || 
-        item.barcode.toLowerCase().includes(filterLowerCase) ||         
+        item.barcode.toLowerCase().includes(filterLowerCase) || 
+        item.Prices[0].price.toString().toLowerCase().includes(filterLowerCase) ||
             item.Measure.name.toLowerCase().includes(filterLowerCase)) {
                 return true;
             } 
@@ -264,6 +281,7 @@ const Items = () =>{
 
     const itemNameClass = itemNameHasError && !isLocked ? style.invalid : "";
     const barcodeClass = barcodeHasError && !isLocked ? style.invalid : "";
+    const priceClass = priceHasError && !isLocked ? style.invalid : "";
     const measureClass = measureHasError && !isLocked ? style.invalid : "";
      
     const editModal = (
@@ -280,7 +298,12 @@ const Items = () =>{
                 <label>Barcode</label>
                 <input type="text" value={barcodeEnteredValue} onInput={barcodeChangeHandler} onBlur={barcodeBlurHandler}/>
                 <p>The field cannot be empty</p>
-            </div>         
+            </div>   
+            <div className={`${style.inputGroup} ${priceClass}`}>
+                <label>Price</label>
+                <input type="text" value={priceEnteredValue} onInput={priceChangeHandler} onBlur={priceBlurHandler}/>
+                <p>This fild must be a positive number</p>
+            </div>       
             <div className={`${style.inputGroup} ${measureClass}`}>
                 <label>Measure</label>
                 <select value={measureEnteredValue} onChange={selectOnChangeHandler}>
@@ -328,6 +351,7 @@ const Items = () =>{
                                 <th>Barcode</th>
                                 <th>Item name</th>
                                 <th>Measure</th>
+                                <th>Price</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
