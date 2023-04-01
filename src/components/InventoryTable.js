@@ -8,12 +8,13 @@ const InventoryTable = (props) => {
     const resultInventory = props.inventory;
     const invID = props.invid;
     
-
     const idRef = useRef();
     const barcodeRef = useRef();
     const itemRef = useRef();
     const quantityRef = useRef();
     const measureRef = useRef();
+    const priceRef = useRef();
+    const totalRef = useRef();
     const shelfRef = useRef();
     const levelRef = useRef();
 
@@ -25,6 +26,8 @@ const InventoryTable = (props) => {
         item: "",
         quantity: "",
         measure: "",
+        price: "",
+        total: "",
         shelf: "",
         level: "",
     });   
@@ -41,6 +44,8 @@ const InventoryTable = (props) => {
             <td>{inventory.Item.name}</td>
             <td>{inventory.quantity}</td>
             <td>{inventory.Item.Measure.name}</td>
+            <td>{`${inventory.Item.Prices[0].price} Ft`}</td>
+            <td>{`${Math.round(inventory.Item.Prices[0].price * inventory.quantity)} Ft`}</td>
             <td>{inventory.Shelf.name}</td>
             <td>{inventory.shelflevel}</td>
         </tr>);
@@ -54,7 +59,9 @@ const InventoryTable = (props) => {
                 inventory.quantity.toString().includes(filter.quantity) &&
                 inventory.Item.name.toLowerCase().includes(filter.item.toLowerCase()) &&
                 inventory.Item.Measure.name.toLowerCase().includes(filter.measure.toLowerCase()) &&
-                inventory.Shelf.name.toLowerCase().includes(filter.shelf.toLowerCase())) {
+                inventory.Shelf.name.toLowerCase().includes(filter.shelf.toLowerCase()) &&
+                inventory.Item.Prices[0].price.toString().includes(filter.price) &&
+                Math.round(inventory.Item.Prices[0].price * inventory.quantity).toString().includes(filter.total)) {
                     return true;
         }
         return false;
@@ -79,9 +86,13 @@ const InventoryTable = (props) => {
         }
     }
     
-    const pageDataJSX = filteredInventory.slice(pageFrom - 1, pageTo).map((inventory) => {
-        return generateTr(inventory, invID);
-    })
+    let pageDataJSX = <tr className={style.textCenter}><td colSpan={9}>No data available...</td></tr>;
+    if (inventoryLength > 0) {
+        
+        pageDataJSX = filteredInventory.slice(pageFrom - 1, pageTo).map((inventory) => {
+            return generateTr(inventory, invID);
+        })
+    }
 
     const pageOptions = [];
     for (let i = 1; i <= divider; i++) {
@@ -97,6 +108,8 @@ const InventoryTable = (props) => {
                 item: itemRef.current.value,
                 quantity: quantityRef.current.value,
                 measure: measureRef.current.value,
+                price: priceRef.current.value,
+                total: totalRef.current.value,
                 shelf: shelfRef.current.value,
                 level: levelRef.current.value,
             });
@@ -110,6 +123,8 @@ const InventoryTable = (props) => {
             item: itemRef.current.value,
             quantity: quantityRef.current.value,
             measure: measureRef.current.value,
+            price: priceRef.current.value,
+            total: totalRef.current.value,
             shelf: shelfRef.current.value,
             level: levelRef.current.value,
         });
@@ -129,6 +144,8 @@ const InventoryTable = (props) => {
                             <th>Item</th>
                             <th>Quantity</th>
                             <th>Measure</th>
+                            <th>Prive</th>
+                            <th>Total price</th>
                             <th>Shelf</th>
                             <th>Shelf level</th>
                         </tr>
@@ -138,6 +155,8 @@ const InventoryTable = (props) => {
                             <td><input type='text' placeholder='Item' ref={itemRef} onKeyDown={searchOnKeyDownHandler}/></td>
                             <td><input type='text' placeholder='Quantity' ref={quantityRef} onKeyDown={searchOnKeyDownHandler}/></td>
                             <td><input type='text' placeholder='Measure' ref={measureRef} onKeyDown={searchOnKeyDownHandler}/></td>
+                            <td><input type='text' placeholder='Price' ref={priceRef} onKeyDown={searchOnKeyDownHandler}/></td>
+                            <td><input type='text' placeholder='Total price' ref={totalRef} onKeyDown={searchOnKeyDownHandler}/></td>
                             <td><input type='text' placeholder='Shelf' ref={shelfRef} onKeyDown={searchOnKeyDownHandler}/></td>
                             <td className={style.last}><input type='text' placeholder='Shelf level' ref={levelRef} onKeyDown={searchOnKeyDownHandler}/><button onClick={searchOnClickHandler}><Icon size='12' icon='search'/></button></td>
                         </tr>
