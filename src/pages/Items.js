@@ -6,13 +6,13 @@ import useModal from '../hooks/use-Modal';
 import Modal from '../components/modal/Modal';
 import useInput from '../hooks/use-Input';
 import useCustomFetch from '../hooks/use-CustomFetch';
+import useValidate from '../hooks/use-Validate';
 
 const Items = () =>{
     const [resultItems, setResultItems] = useState();
     const [resultMeasures, setResultMeasures] = useState();
     
     const [selectedItem, setSelectedItem] = useState({});
-    const [selectedMeasureValue, setSelectedMeasureValue] = useState(0);
 
     const [itemFilter, setItemFilter] = useState("");
     const [itemFilterInput, setItemFilterInput] = useState("");
@@ -21,6 +21,10 @@ const Items = () =>{
     const [isEdit, setIsEdit] = useState(true);
 
     const customFetch = useCustomFetch();
+    const {
+        notEmpty: validateNotEmpty,
+        positiveNumber: validatePositiveNumber
+    } = useValidate();
 
     const {
         isShown: isShownEditModal,
@@ -42,7 +46,7 @@ const Items = () =>{
         changeHandler: itemNameChangeHandler,
         blurHandler:itemNameBlurHandler,
         reset: itemNameReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(validateNotEmpty);
 
     const {
         value: barcodeEnteredValue,
@@ -52,7 +56,17 @@ const Items = () =>{
         changeHandler: barcodeChangeHandler,
         blurHandler:barcodeBlurHandler,
         reset: barcodeReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(validatePositiveNumber);
+
+    const {
+        value: measureEnteredValue,
+        setValue: setmeasureEnteredValue,
+        isValid: measureIsValid,
+        hasError: measureHasError,
+        changeHandler: measureChangeHandler,
+        blurHandler:measureBlurHandler,
+        reset: measureReset,
+    } = useInput(value => value !== "0");
 
     const loadItems = async () => {
         const response = await fetch("http://192.168.50.62:8080/item/get", {
@@ -85,6 +99,7 @@ const Items = () =>{
         
         loadItems();
         loadMeasures();
+        setmeasureEnteredValue("0");
     }, []);
 
     const userEditOnClickHandler = (item) => {
@@ -92,7 +107,7 @@ const Items = () =>{
         setIsLocked(true);
         setIsEdit(true);
         console.log(selectedItem);
-        setSelectedMeasureValue(item.Measure.id);
+        setmeasureEnteredValue(item.Measure.id);
         setbarcodeEnteredValue(item.barcode);
         
         setitemNameEnteredValue(item.name);
@@ -129,12 +144,19 @@ const Items = () =>{
 
     const saveEditOnClickHandler = async () => {
 
+        if (!itemNameIsValid && !barcodeIsValid && !measureIsValid) {
+            itemNameBlurHandler();
+            barcodeBlurHandler();
+            measureBlurHandler();
+            return;
+        }
+
         const data = {
             token: localStorage.getItem("token"),
             id: selectedItem.id,
             name: itemNameEnteredValue,
             barcode: barcodeEnteredValue,
-            measure: selectedMeasureValue
+            measure: measureEnteredValue
         };
 
         const afterSuccess = () => {loadItems();}
@@ -144,11 +166,18 @@ const Items = () =>{
     }
 
     const addOnClickHandler = async () => {
+
+        if (!itemNameIsValid && !barcodeIsValid && !measureIsValid) {
+            itemNameBlurHandler();
+            barcodeBlurHandler();
+            measureBlurHandler();
+            return;
+        }
         
         const data = {
             token: localStorage.getItem("token"),              
             name: itemNameEnteredValue,
-            measure: selectedMeasureValue,
+            measure: measureEnteredValue,
             barcode: barcodeEnteredValue,
         };
 
@@ -161,7 +190,7 @@ const Items = () =>{
     const addItemOnClickHandler = () => {
         setIsEdit(false);
         setIsLocked(false);      
-        setSelectedMeasureValue(0);
+        measureReset("0")
         itemNameReset();
         barcodeReset();
         showEditModal();
@@ -218,7 +247,7 @@ const Items = () =>{
     }
 
     const selectOnChangeHandler = (event) => {
-        setSelectedMeasureValue(event.target.value);
+        setmeasureEnteredValue(event.target.value);
     }
 
     let tbody = <tr><td colSpan='5' className={style.textCenter}>No data available...</td></tr>;
@@ -235,6 +264,7 @@ const Items = () =>{
 
     const itemNameClass = itemNameHasError && !isLocked ? style.invalid : "";
     const barcodeClass = barcodeHasError && !isLocked ? style.invalid : "";
+    const measureClass = measureHasError && !isLocked ? style.invalid : "";
      
     const editModal = (
         <Modal onClose={hideEditModal}>
@@ -251,12 +281,13 @@ const Items = () =>{
                 <input type="text" value={barcodeEnteredValue} onInput={barcodeChangeHandler} onBlur={barcodeBlurHandler}/>
                 <p>The field cannot be empty</p>
             </div>         
-            <div className={style.inputGroup}>
+            <div className={`${style.inputGroup} ${measureClass}`}>
                 <label>Measure</label>
-                <select value={selectedMeasureValue} onChange={selectOnChangeHandler}>
+                <select value={measureEnteredValue} onChange={selectOnChangeHandler}>
                     <option value={0}>Choose a measure...</option>
                     {selectOptions}
                 </select>
+                <p>Please choose a measure</p>
             </div>
             <div className={style.formBtns}>                         
                 {isEdit && <button className={`${style.btn} ${style.btnSuccess}`} onClick={saveEditOnClickHandler}>Save</button>}  
