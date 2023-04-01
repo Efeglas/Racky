@@ -6,7 +6,8 @@ import Icon from "../icons/Icon";
 import useModal from '../hooks/use-Modal';
 import Modal from '../components/modal/Modal';
 import useInput from "../hooks/use-Input";
-import { toast } from 'react-toastify';
+import useCustomFetch from '../hooks/use-CustomFetch';
+import useToast from '../hooks/use-Toast';
 
 const SpecificOrder = () => {
 
@@ -29,6 +30,8 @@ const SpecificOrder = () => {
 
     const [closeErrorArray, setCloseErrorArray] = useState([]);
 
+    const customFetch = useCustomFetch();
+    const fireToast = useToast();
     const navigate = useNavigate();
 
     const {
@@ -138,7 +141,27 @@ const SpecificOrder = () => {
 
     const addItemToDBClickHandler = async () => {
        
-        const response = await fetch("http://192.168.50.62:8080/order/orderitem/add", {
+        const data = {
+            token: localStorage.getItem("token"), 
+            order: orderId,             
+            item: selectedItem,
+            shelf: selectedShelf,
+            shelflevel: selectedShelfLevel,
+            quantity: qtyEnteredValue,
+        };
+
+        const afterSuccess = () => {
+            setSelectedItem(0);
+            setSelectedShlef(0);
+            setSelectedShlefLevel(0);
+            setSelectedItemMeasure("-");
+            qtyReset();
+            loadOrderItems();
+        }
+        const generalEnd = () => {hideAddModal();}
+
+        customFetch("/order/orderitem/add", data, "POST", afterSuccess, generalEnd); 
+     /*    const response = await fetch("http://192.168.50.62:8080/order/orderitem/add", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -184,12 +207,25 @@ const SpecificOrder = () => {
                 theme: "light",
             });
         }        
-        hideAddModal();
+        hideAddModal(); */
     }
 
     const editItemToDBClickHandler = async () => {
 
-        const response = await fetch("http://192.168.50.62:8080/order/orderitem/edit", {
+        const data = {
+            token: localStorage.getItem("token"), 
+            order: orderId,             
+            item: selectedItem,
+            shelf: selectedShelf,
+            shelflevel: selectedShelfLevel,
+            quantity: qtyEnteredValue,
+        };
+
+        const afterSuccess = () => {loadOrderItems();}
+        const generalEnd = () => {hideAddModal();}
+
+        customFetch("/order/orderitem/edit", data, "PATCH", afterSuccess, generalEnd); 
+      /*   const response = await fetch("http://192.168.50.62:8080/order/orderitem/edit", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -231,7 +267,7 @@ const SpecificOrder = () => {
                 theme: "light",
             });
         }        
-        hideAddModal();
+        hideAddModal(); */
     }
 
     const selectItemChangeHandler = (event) => {
@@ -256,7 +292,17 @@ const SpecificOrder = () => {
 
     const deleteOrderItemFromDBClickHandler = async () => {
         
-        const response = await fetch("http://192.168.50.62:8080/order/orderitem/delete", {
+        const data = {
+            token: localStorage.getItem("token"), 
+            orderitem: selectedOrderItem.id,                            
+        };
+
+        const afterSuccess = () => {loadOrderItems();}
+        const generalEnd = () => {hideDeleteModal();}
+
+        customFetch("/order/orderitem/delete", data, "DELETE", afterSuccess, generalEnd); 
+
+        /* const response = await fetch("http://192.168.50.62:8080/order/orderitem/delete", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -293,7 +339,7 @@ const SpecificOrder = () => {
                 theme: "light",
             });
         }        
-        hideDeleteModal();
+        hideDeleteModal(); */
     }
 
     const initDeleteOrderHandler = () => {
@@ -302,7 +348,18 @@ const SpecificOrder = () => {
     }
 
     const deleteOrderFromDBHandler = async () => {
-        const response = await fetch("http://192.168.50.62:8080/order/delete", {
+
+        const data = {
+            token: localStorage.getItem("token"), 
+            order: orderId,                            
+        };
+
+        const afterSuccess = () => {navigate('/order');}
+        const generalEnd = () => {hideDeleteModal();}
+
+        customFetch("/order/delete", data, "DELETE", afterSuccess, generalEnd); 
+
+        /* const response = await fetch("http://192.168.50.62:8080/order/delete", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -339,7 +396,7 @@ const SpecificOrder = () => {
                 theme: "light",
             });
         }        
-        hideDeleteModal();
+        hideDeleteModal(); */
     }
 
     const closeOrderClickHandler = () => {
@@ -368,28 +425,10 @@ const SpecificOrder = () => {
         } else {
 
             if (response.ok) {
-                 toast.success('Order closed', {
-                     position: "top-right",
-                     autoClose: 3000,
-                     hideProgressBar: false,
-                     closeOnClick: true,
-                     pauseOnHover: true,
-                     draggable: true,
-                     progress: undefined,
-                     theme: "light",
-                 });          
+                fireToast('Order closed');                         
                  loadOrder();
              } else {
-                 toast.error(json.message, {
-                     position: "top-right",
-                     autoClose: 3000,
-                     hideProgressBar: false,
-                     closeOnClick: true,
-                     pauseOnHover: true,
-                     draggable: true,
-                     progress: undefined,
-                     theme: "light",
-                 });
+                fireToast(json.message, 'error');                
              }        
              hideCloseModal();
         }

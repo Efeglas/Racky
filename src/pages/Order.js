@@ -3,12 +3,14 @@ import style from './Order.module.css';
 import { useNavigate } from 'react-router-dom';
 import OrderTable from '../components/OrderTable';
 import Icon from '../icons/Icon';
-import { toast } from 'react-toastify';
+import useToast from '../hooks/use-Toast';
 
 const Order = () => {
 
     const [resultOrders, setResultOrders] = useState([]);
     const navigate = useNavigate();
+
+    const fireToast = useToast();
 
     const loadOrders = async () => {
 
@@ -35,16 +37,7 @@ const Order = () => {
         });
         const json = await response.json();
         navigate('/order/' + json.id);
-        toast.success('Order created (IN)', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
+        fireToast('Order created (IN)');      
     }
 
     const createOrderOut = async () => {
@@ -58,16 +51,7 @@ const Order = () => {
         });
         const json = await response.json();
         navigate('/order/' + json.id);
-        toast.success('Order created (OUT)', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
+        fireToast('Order created (OUT)');        
     }
 
     useEffect(() => {
