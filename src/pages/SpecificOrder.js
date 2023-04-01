@@ -32,7 +32,7 @@ const SpecificOrder = () => {
     const fireToast = useToast();
     const navigate = useNavigate();
     const {
-        positiveNumber: validatePositiveNumber
+        positiveFloat: validatePositiveFloat
     } = useValidate();
 
     const {
@@ -67,7 +67,7 @@ const SpecificOrder = () => {
         changeHandler: qtyChangeHandler,
         blurHandler:qtyBlurHandler,
         reset: qtyReset,
-    } = useInput(validatePositiveNumber);
+    } = useInput(validatePositiveFloat);
 
     const {
         value: selectedItemEnteredValue,
