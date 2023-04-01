@@ -8,6 +8,7 @@ import Modal from '../components/modal/Modal';
 import useInput from "../hooks/use-Input";
 import useCustomFetch from '../hooks/use-CustomFetch';
 import useToast from '../hooks/use-Toast';
+import useValidate from "../hooks/use-Validate";
 
 const SpecificOrder = () => {
 
@@ -18,9 +19,6 @@ const SpecificOrder = () => {
     const [shelves, setShelves] = useState([]);
     const [orderIsClosed, setOrderIsClosed] = useState(false);
 
-    const [selectedShelf, setSelectedShlef] = useState(0);
-    const [selectedShelfLevel, setSelectedShlefLevel] = useState(0);
-    const [selectedItem, setSelectedItem] = useState(0);
     const [selectedItemMeasure, setSelectedItemMeasure] = useState("-");
 
     const [selectedOrderItem, setSelectedOrderItem] = useState({});
@@ -33,6 +31,9 @@ const SpecificOrder = () => {
     const customFetch = useCustomFetch();
     const fireToast = useToast();
     const navigate = useNavigate();
+    const {
+        positiveNumber: validatePositiveNumber
+    } = useValidate();
 
     const {
         isShown: isShownAddModal,
@@ -66,7 +67,37 @@ const SpecificOrder = () => {
         changeHandler: qtyChangeHandler,
         blurHandler:qtyBlurHandler,
         reset: qtyReset,
-    } = useInput(value => value.toString().trim() !== "");
+    } = useInput(validatePositiveNumber);
+
+    const {
+        value: selectedItemEnteredValue,
+        setValue: setselectedItemEnteredValue,
+        isValid: selectedItemIsValid,
+        hasError: selectedItemHasError,
+        changeHandler: selectedItemChangeHandler,
+        blurHandler:selectedItemBlurHandler,
+        reset: selectedItemReset,
+    } = useInput(value => value !== "0");
+
+    const {
+        value: selectedShelfEnteredValue,
+        setValue: setselectedShelfEnteredValue,
+        isValid: selectedShelfIsValid,
+        hasError: selectedShelfHasError,
+        changeHandler: selectedShelfChangeHandler,
+        blurHandler:selectedShelfBlurHandler,
+        reset: selectedShelfReset,
+    } = useInput(value => value !== "0");
+
+    const {
+        value: selectedShelfLevelEnteredValue,
+        setValue: setselectedShelfLevelEnteredValue,
+        isValid: selectedShelfLevelIsValid,
+        hasError: selectedShelfLevelHasError,
+        changeHandler: selectedShelfLevelChangeHandler,
+        blurHandler:selectedShelfLevelBlurHandler,
+        reset: selectedShelfLevelReset,
+    } = useInput(value => value !== "0");
 
     const loadOrder = async () => {
 
@@ -127,33 +158,49 @@ const SpecificOrder = () => {
 
     useEffect(() => {
         loadOrder();
+        
+        setselectedItemEnteredValue("0");
+        setselectedShelfEnteredValue("0");
+        setselectedShelfLevelEnteredValue('0');
     }, []);
 
     const addItemOnClickHandler = () => {
         setIsEdit(false);
-        setSelectedItem(0);
-        setSelectedShlef(0);
-        setSelectedShlefLevel(0);
+        
+        selectedItemReset("0");
+        selectedShelfReset("0");
+        selectedShelfLevelReset("0");
+
         setSelectedItemMeasure("-");
         qtyReset();
         showAddModal();
     }
 
     const addItemToDBClickHandler = async () => {
+
+        if (!qtyIsValid && !selectedItemIsValid && !selectedShelfIsValid && !selectedShelfLevelIsValid) {
+            qtyBlurHandler();
+            selectedItemBlurHandler();
+            selectedShelfBlurHandler();
+            selectedShelfLevelBlurHandler();
+            return;
+        }
        
         const data = {
             token: localStorage.getItem("token"), 
             order: orderId,             
-            item: selectedItem,
-            shelf: selectedShelf,
-            shelflevel: selectedShelfLevel,
+            item: selectedItemEnteredValue,
+            shelf: selectedShelfEnteredValue,
+            shelflevel: selectedShelfLevelEnteredValue,
             quantity: qtyEnteredValue,
         };
 
         const afterSuccess = () => {
-            setSelectedItem(0);
-            setSelectedShlef(0);
-            setSelectedShlefLevel(0);
+
+            selectedItemReset("0");
+            selectedShelfReset("0");
+            selectedShelfLevelReset("0");
+
             setSelectedItemMeasure("-");
             qtyReset();
             loadOrderItems();
@@ -161,63 +208,24 @@ const SpecificOrder = () => {
         const generalEnd = () => {hideAddModal();}
 
         customFetch("/order/orderitem/add", data, "POST", afterSuccess, generalEnd); 
-     /*    const response = await fetch("http://192.168.50.62:8080/order/orderitem/add", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"), 
-                order: orderId,             
-                item: selectedItem,
-                shelf: selectedShelf,
-                shelflevel: selectedShelfLevel,
-                quantity: qtyEnteredValue,
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
-
-        if (response.ok) {
-            toast.success('Order item added', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            setSelectedItem(0);
-            setSelectedShlef(0);
-            setSelectedShlefLevel(0);
-            setSelectedItemMeasure("-");
-            qtyReset();
-            loadOrderItems();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }        
-        hideAddModal(); */
     }
 
     const editItemToDBClickHandler = async () => {
 
+        if (!qtyIsValid && !selectedItemIsValid && !selectedShelfIsValid && !selectedShelfLevelIsValid) {
+            qtyBlurHandler();
+            selectedItemBlurHandler();
+            selectedShelfBlurHandler();
+            selectedShelfLevelBlurHandler();
+            return;
+        }
+
         const data = {
             token: localStorage.getItem("token"), 
             order: orderId,             
-            item: selectedItem,
-            shelf: selectedShelf,
-            shelflevel: selectedShelfLevel,
+            item: selectedItemEnteredValue,
+            shelf: selectedShelfEnteredValue,
+            shelflevel: selectedShelfLevelEnteredValue,
             quantity: qtyEnteredValue,
         };
 
@@ -225,53 +233,10 @@ const SpecificOrder = () => {
         const generalEnd = () => {hideAddModal();}
 
         customFetch("/order/orderitem/edit", data, "PATCH", afterSuccess, generalEnd); 
-      /*   const response = await fetch("http://192.168.50.62:8080/order/orderitem/edit", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"), 
-                order: orderId,             
-                item: selectedItem,
-                shelf: selectedShelf,
-                shelflevel: selectedShelfLevel,
-                quantity: qtyEnteredValue,
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
-
-        if (response.ok) {
-            toast.success('Order item edited', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-            
-            loadOrderItems();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }        
-        hideAddModal(); */
     }
 
     const selectItemChangeHandler = (event) => {
-        setSelectedItem(event.target.value);
+        setselectedItemEnteredValue(event.target.value);
         const item = items.find((item) => {
             if (item.id == event.target.value) {
                 return true;
@@ -282,12 +247,12 @@ const SpecificOrder = () => {
     }
 
     const selectShelfChangeHandler = (event) => {
-        setSelectedShlefLevel(0);  
-        setSelectedShlef(event.target.value);
+        setselectedShelfLevelEnteredValue(0);  
+        setselectedShelfEnteredValue(event.target.value);
     }
 
     const selectShelfLevelChangeHandler = (event) => {
-        setSelectedShlefLevel(event.target.value);
+        setselectedShelfLevelEnteredValue(event.target.value);
     }
 
     const deleteOrderItemFromDBClickHandler = async () => {
@@ -301,45 +266,6 @@ const SpecificOrder = () => {
         const generalEnd = () => {hideDeleteModal();}
 
         customFetch("/order/orderitem/delete", data, "DELETE", afterSuccess, generalEnd); 
-
-        /* const response = await fetch("http://192.168.50.62:8080/order/orderitem/delete", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"), 
-                orderitem: selectedOrderItem.id,                            
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
-
-        if (response.ok) {
-            toast.success('Order item deleted', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });          
-            loadOrderItems();
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }        
-        hideDeleteModal(); */
     }
 
     const initDeleteOrderHandler = () => {
@@ -358,45 +284,6 @@ const SpecificOrder = () => {
         const generalEnd = () => {hideDeleteModal();}
 
         customFetch("/order/delete", data, "DELETE", afterSuccess, generalEnd); 
-
-        /* const response = await fetch("http://192.168.50.62:8080/order/delete", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: localStorage.getItem("token"), 
-                order: orderId,                            
-            }) 
-        });
-        const json = await response.json();
-        console.log(json);
-
-        if (response.ok) {
-            toast.success('Order deleted', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });          
-            navigate('/order');
-        } else {
-            toast.error(json.message, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
-        }        
-        hideDeleteModal(); */
     }
 
     const closeOrderClickHandler = () => {
@@ -459,11 +346,11 @@ const SpecificOrder = () => {
         const editOrderItemClickHandler = (orderitem) => {   
                
             setIsEdit(true);
-            setSelectedItem(orderitem.Item.id);
+            setselectedItemEnteredValue(orderitem.Item.id);
             setSelectedOrderItem(orderitem);
             setSelectedItemMeasure(orderitem.Item.Measure.name);
-            setSelectedShlef(orderitem.Shelf.id);  
-            setSelectedShlefLevel(orderitem.shelflevel);         
+            setselectedShelfEnteredValue(orderitem.Shelf.id);  
+            setselectedShelfLevelEnteredValue(orderitem.shelflevel);         
             setqtyEnteredValue(orderitem.quantity);
             showAddModal();
         }
@@ -510,9 +397,11 @@ const SpecificOrder = () => {
         }
 
         let shelfLevelOptions = [<option  key={0} value='0'>Choose a level...</option>];
-        if (selectedShelf !== 0) {
+     
+        if (selectedShelfEnteredValue !== "0") {
+            console.log(selectedShelfEnteredValue, shelves[0].id);
             const shelfForLevel = shelves.find((shelf) => {                      
-                if (shelf.id == selectedShelf) {
+                if (shelf.id == selectedShelfEnteredValue) {
                     return true;
                 }
                 return false;
@@ -523,6 +412,9 @@ const SpecificOrder = () => {
         }
 
         const quantityClass = qtyHasError ? style.invalid : ""; 
+        const shelfClass = selectedShelfHasError ? style.invalid : ""; 
+        const shelfLevelClass = selectedShelfLevelHasError ? style.invalid : ""; 
+        const itemClass = selectedItemHasError ? style.invalid : ""; 
 
         const addModal = (
             <Modal onClose={hideAddModal}>
@@ -530,19 +422,19 @@ const SpecificOrder = () => {
                     {isEdit && `Edit order item (${selectedOrderItem.id})`}
                     {!isEdit && `Add item to order list`}
                 </h3>
-                <div className={`${style.inputGroup}`}>
+                <div className={`${style.inputGroup} ${itemClass}`}>
                     <label>Items</label>
-                    <select value={selectedItem} onChange={selectItemChangeHandler}>{itemOptions}</select>
+                    <select value={selectedItemEnteredValue} onChange={selectItemChangeHandler}>{itemOptions}</select>
                     <p>The field cannot be empty</p>
                 </div>
-                <div className={`${style.inputGroup}`}>
+                <div className={`${style.inputGroup}  ${shelfClass}`}>
                     <label>Shelf</label>
-                    <select value={selectedShelf} onChange={selectShelfChangeHandler}>{shelfOptions}</select>
+                    <select value={selectedShelfEnteredValue} onChange={selectShelfChangeHandler}>{shelfOptions}</select>
                     <p>The field cannot be empty</p>
                 </div>
-                <div className={`${style.inputGroup}`}>
+                <div className={`${style.inputGroup} ${shelfLevelClass}`}>
                     <label>Shelf level</label>
-                    <select value={selectedShelfLevel} onChange={selectShelfLevelChangeHandler}>{shelfLevelOptions}</select>
+                    <select value={selectedShelfLevelEnteredValue} onChange={selectShelfLevelChangeHandler}>{shelfLevelOptions}</select>
                     <p>The field cannot be empty</p>
                 </div>
                 <div className={`${style.inputGroup} ${quantityClass}`}>

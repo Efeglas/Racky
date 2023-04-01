@@ -227,6 +227,10 @@ select:disabled {
     background-color: #f7b9b3;
 }
 
+.inputGroup.invalid>select{
+    background-color: #f7b9b3;
+}
+
 input:focus {
     border-color: #2980b9;
     outline: none;

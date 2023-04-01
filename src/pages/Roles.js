@@ -7,6 +7,7 @@ import useInput from "../hooks/use-Input";
 import Modal from '../components/modal/Modal'
 import Loader from "../components/loader/Loader";
 import useCustomFetch from '../hooks/use-CustomFetch';
+import useValidate from "../hooks/use-Validate";
 
 const Roles = () => {
 
@@ -18,6 +19,8 @@ const Roles = () => {
     const [isAddRole, setIsAddRole] = useState(false);
     
     const customFetch = useCustomFetch();
+
+    const {notEmpty: validateNotEmpty} = useValidate();
 
     const loadPermissions = async () => {
         const response = await fetch("http://192.168.50.62:8080/role/permissions", {
@@ -82,7 +85,7 @@ const Roles = () => {
         changeHandler: roleNameChangeHandler,
         blurHandler:roleNameBlurHandler,
         reset: roleNameReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(validateNotEmpty);
 
     
     const renameClickHandler = (role) => {
@@ -138,6 +141,7 @@ const Roles = () => {
     const permissionSaveClickHandler = async () => {
 
         if (!roleNameIsValid) {
+            roleNameBlurHandler();
             return;
         } 
 
@@ -198,6 +202,11 @@ const Roles = () => {
     }
 
     const addRoleSaveClickHandler = async () => {
+
+        if (!roleNameIsValid) {
+            roleNameBlurHandler();
+            return;
+        } 
 
         const data = {token: localStorage.getItem("token"), name: roleNameEnteredValue};
 

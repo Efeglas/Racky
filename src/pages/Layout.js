@@ -6,6 +6,7 @@ import useModal from "../hooks/use-Modal";
 import useInput from "../hooks/use-Input";
 import useCustomFetch from '../hooks/use-CustomFetch';
 import useToast from "../hooks/use-Toast";
+import useValidate from "../hooks/use-Validate";
 
 const Layout = () => {
 
@@ -32,6 +33,11 @@ const Layout = () => {
 
     const customFetch = useCustomFetch();
     const fireToast = useToast();
+
+    const {
+        notEmpty: validateNotEmpty,
+        positiveNumber: validatePositiveNumber
+    } = useValidate();
     
     const {
         isShown: isShownAddLayoutModal,
@@ -59,7 +65,7 @@ const Layout = () => {
         changeHandler: layoutChangeHandler,
         blurHandler:layoutBlurHandler,
         reset: layoutReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(validateNotEmpty);
 
     const {
         value: widthEnteredValue,
@@ -69,7 +75,7 @@ const Layout = () => {
         changeHandler: widthChangeHandler,
         blurHandler:widthBlurHandler,
         reset: widthReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(validatePositiveNumber);
 
     const {
         value: heightEnteredValue,
@@ -79,7 +85,7 @@ const Layout = () => {
         changeHandler: heightChangeHandler,
         blurHandler:heightBlurHandler,
         reset: heightReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(validatePositiveNumber);
 
     const {
         value: shelfNameEnteredValue,
@@ -89,7 +95,7 @@ const Layout = () => {
         changeHandler: shelfNameChangeHandler,
         blurHandler:shelfNameBlurHandler,
         reset: shelfNameReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(validateNotEmpty);
 
     const {
         value: shelfLevelEnteredValue,
@@ -99,7 +105,7 @@ const Layout = () => {
         changeHandler: shelfLevelChangeHandler,
         blurHandler:shelfLevelBlurHandler,
         reset: shelfLevelReset,
-    } = useInput(value => value !== "");
+    } = useInput(validatePositiveNumber);
 
     const generateLayoutOptions = () => {
         if (resultLayouts.length > 0) {
@@ -176,6 +182,13 @@ const Layout = () => {
     }
 
     const placeShelfClickHandler = () => {
+
+        if (!shelfNameIsValid && !shelfLevelIsValid) {
+            shelfNameBlurHandler();
+            shelfLevelBlurHandler();
+            return;
+        }
+
         hideAddShelfModal();
         setIsShelfPlacing(true);
         setShelfCoords([]);
@@ -231,7 +244,7 @@ const Layout = () => {
     }
 
     const saveShelf = async (sortedCoords) => {
-
+        
         const data = {
             token: localStorage.getItem("token"),              
             name: shelfNameEnteredValue,
@@ -349,6 +362,13 @@ const Layout = () => {
 
     const addLayoutCLickHandler = async () => {
 
+        if (!layoutIsValid && !widthIsValid && !heightIsValid) {
+            layoutBlurHandler();
+            widthBlurHandler();
+            heightBlurHandler();
+            return;
+        }
+        
         const data = {
             token: localStorage.getItem("token"),              
             name: layoutEnteredValue,
@@ -411,6 +431,12 @@ const Layout = () => {
     }
 
     const saveNewNameForShelf = async () => {
+
+        if (!shelfNameIsValid && !shelfLevelIsValid) {
+            shelfNameBlurHandler();
+            shelfLevelBlurHandler();
+            return;
+        }
         
         const data = {
             token: localStorage.getItem("token"),   
@@ -470,7 +496,7 @@ const Layout = () => {
             <div className={`${style.inputGroup} ${levelsClass}`}>
                 <label>Levels</label>
                 <input type="number" onInput={shelfLevelChangeHandler} onBlur={shelfLevelBlurHandler} value={shelfLevelEnteredValue} disabled={isEditShelf}/>
-                <p>The field cannot be empty</p>
+                <p>This field can only be a number</p>
             </div>           
             <div className={style.formBtns}>
                 {isEditShelf && <button className={`${style.btn} ${style.btnSuccess}`} onClick={saveNewNameForShelf}>Save</button>}

@@ -6,6 +6,7 @@ import useModal from '../hooks/use-Modal';
 import Modal from '../components/modal/Modal';
 import useInput from '../hooks/use-Input';
 import useCustomFetch from '../hooks/use-CustomFetch';
+import useValidate from '../hooks/use-Validate';
 
 const Users = () => {
 
@@ -21,6 +22,12 @@ const Users = () => {
     const [isEdit, setIsEdit] = useState(true);
 
     const customFetch = useCustomFetch();
+
+    const {
+        notEmpty: validateNotEmpty,      
+        email: validateEmail,
+        phone: validatePhone
+    } = useValidate();
 
     const {
         isShown: isShownEditModal,
@@ -50,7 +57,7 @@ const Users = () => {
         changeHandler: firstNameChangeHandler,
         blurHandler:firstNameBlurHandler,
         reset: firstNameReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(validateNotEmpty);
 
     const {
         value: lastNameEnteredValue,
@@ -60,7 +67,7 @@ const Users = () => {
         changeHandler: lastNameChangeHandler,
         blurHandler:lastNameBlurHandler,
         reset: lastNameReset,
-    } = useInput(value => value.trim() !== "");
+    } = useInput(validateNotEmpty);
 
     const {
         value: emailEnteredValue,
@@ -70,10 +77,7 @@ const Users = () => {
         changeHandler: emailChangeHandler,
         blurHandler:emailBlurHandler,
         reset: emailReset,
-    } = useInput(email => {
-        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return pattern.test(email);
-    });
+    } = useInput(validateEmail);
 
     const {
         value: phoneEnteredValue,
@@ -83,10 +87,7 @@ const Users = () => {
         changeHandler: phoneChangeHandler,
         blurHandler:phoneBlurHandler,
         reset: phoneReset,
-    } = useInput(phoneNumber => {
-        const pattern = /^\+(?:[0-9] ?){6,14}[0-9]$/;
-        return pattern.test(phoneNumber);
-    });
+    } = useInput(validatePhone);
 
     const loadUsers = async () => {
         const response = await fetch("http://192.168.50.62:8080/user/get", {
@@ -163,6 +164,14 @@ const Users = () => {
 
     const saveEditOnClickHandler = async () => {
 
+        if (!firstNameIsValid && !lastNameIsValid && !emailIsValid && !phoneIsValid) {
+            firstNameBlurHandler();
+            lastNameBlurHandler();
+            emailBlurHandler();
+            phoneBlurHandler();
+            return;
+        } 
+
         const data = {
             token: localStorage.getItem("token"),
             id: selectedUser.id,
@@ -180,6 +189,14 @@ const Users = () => {
     }
 
     const registerOnClickHandler = async () => {
+
+        if (!firstNameIsValid && !lastNameIsValid && !emailIsValid && !phoneIsValid) {
+            firstNameBlurHandler();
+            lastNameBlurHandler();
+            emailBlurHandler();
+            phoneBlurHandler();
+            return;
+        } 
         
         const data = {
             token: localStorage.getItem("token"),              
