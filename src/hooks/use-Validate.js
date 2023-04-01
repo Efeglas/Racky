@@ -8,6 +8,24 @@ const useValidate = () => {
         return /^[0-9]+$/.test(value) && Number(value) > 0;
     }
 
+    const positiveFloat = (value) => {
+        if (isNaN(value)) {
+            return false;
+          }
+          
+          const num = parseFloat(value);
+          
+          if (isNaN(num)) {
+            return false;
+          }
+          
+          if (num <= 0) {
+            return false;
+          }
+          
+          return true;
+    }
+
     const email = (value) => {
         const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return pattern.test(value)
@@ -22,7 +40,8 @@ const useValidate = () => {
         notEmpty: notEmpty,
         positiveNumber: positiveNumber,
         email: email,
-        phone: phone
+        phone: phone,
+        positiveFloat: positiveFloat
     };
 }
 
