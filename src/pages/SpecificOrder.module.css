@@ -273,3 +273,20 @@ input:focus {
     padding: 5px;
     margin-bottom: 5px;
 }
+
+.warning {
+    color: red;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 5px;
+}
+
+.warning:hover {
+    color: rgb(204, 11, 11);
+    cursor: help;
+}
+
+.price {
+    display: flex;
+    align-items: center;
+}
