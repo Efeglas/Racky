@@ -222,7 +222,7 @@ const SpecificOrder = () => {
 
         const data = {
             token: localStorage.getItem("token"), 
-            order: orderId,             
+            orderitem: selectedOrderItem.id,                       
             item: selectedItemEnteredValue,
             shelf: selectedShelfEnteredValue,
             shelflevel: selectedShelfLevelEnteredValue,
@@ -362,8 +362,10 @@ const SpecificOrder = () => {
         }
 
         let itemsJSX = <tr><td colSpan={7}></td></tr>;
+        let sum = 0;
         if (orderItems.length > 0) {
             itemsJSX = orderItems.map((item) => {
+                sum += Math.round(item.quantity * item.Price.price);
                 return (
                     <tr key={item.id}>
                         <td>{item.id}</td>
@@ -372,6 +374,8 @@ const SpecificOrder = () => {
                         <td>{item.Shelf.name}</td>
                         <td>{item.shelflevel}</td>
                         <td>{item.quantity}</td>
+                        <td><div className={style.price}>{!item.Price.visible && !orderIsClosed && <span className={style.warning} title='Old price'><Icon size='20' icon='warning'/></span>}{`${item.Price.price} Ft`}</div></td>
+                        <td>{`${Math.round(item.quantity * item.Price.price)} Ft`}</td>
                         <td>{item.Item.Measure.name}</td>
                         {!orderIsClosed && <td>
                             <button className={style.btnEdit} onClick={editOrderItemClickHandler.bind(null, item)}><Icon size='20' icon='edit'/></button>
@@ -539,12 +543,20 @@ const SpecificOrder = () => {
                                 <th>Shelf</th>
                                 <th>Shelf level</th>
                                 <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total price</th>
                                 <th>Measure</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {itemsJSX}                                                                          
+                            {itemsJSX}        
+                            <tr>
+                                <td><b>Total price:</b></td>
+                                <td colSpan={6}></td>
+                                <td>{`${sum} Ft`}</td>
+                                <td colSpan={2}></td>
+                            </tr>                                                             
                         </tbody>
                     </table>                  
                 </div>
