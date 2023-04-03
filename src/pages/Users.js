@@ -159,7 +159,7 @@ const Users = () => {
         const afterSuccess = () => {loadUsers();}
         const generalEnd = () => {hideDeleteModal();}
 
-        customFetch("/user/delete", data, "DELETE", afterSuccess, generalEnd);      
+        customFetch("/user", data, "DELETE", afterSuccess, generalEnd);      
     }
 
     const saveEditOnClickHandler = async () => {
@@ -185,7 +185,7 @@ const Users = () => {
         const afterSuccess = () => {loadUsers();}
         const generalEnd = () => {hideEditModal();}
 
-        customFetch("/user/edit", data, "PATCH", afterSuccess, generalEnd);        
+        customFetch("/user", data, "PATCH", afterSuccess, generalEnd);        
     }
 
     const registerOnClickHandler = async () => {
