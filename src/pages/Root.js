@@ -5,12 +5,20 @@ import SideNavigation from "../components/SideNavigation";
 import TopNavigation from "../components/TopNavigation";
 import style from './Root.module.css';
 import TimerProvider from '../store/TimerProvider';
+import useCustomFetch from "../hooks/use-CustomFetch";
 
 const Root = () => {
 
   const navigate = useNavigate();
+  const customFetch = useCustomFetch();
 
   const onLogoutHandler = () => {
+
+    const data = {username: localStorage.getItem("username")};
+    
+    customFetch("/user/logout", data, "POST", ()=>{}, ()=>{}); 
+        
+
     localStorage.clear();
     navigate('/login');
   }
