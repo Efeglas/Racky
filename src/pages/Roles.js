@@ -135,15 +135,10 @@ const Roles = () => {
         const afterSuccess = () => {loadRoles();}
         const generalEnd = () => {hideEditModal();}
 
-        customFetch("/role/rename", data, "PATCH", afterSuccess, generalEnd);  
+        customFetch("/role", data, "PATCH", afterSuccess, generalEnd);  
     }
 
-    const permissionSaveClickHandler = async () => {
-
-        if (!roleNameIsValid) {
-            roleNameBlurHandler();
-            return;
-        } 
+    const permissionSaveClickHandler = async () => {      
 
         const data = {token: localStorage.getItem("token"), role: selectedRole.id, checks: permCheckList};
 
@@ -223,7 +218,7 @@ const Roles = () => {
         const afterSuccess = () => {loadRoles();}
         const generalEnd = () => {hideDeleteModal();}
 
-        customFetch("/role/delete", data, "DELETE", afterSuccess, generalEnd); 
+        customFetch("/role", data, "DELETE", afterSuccess, generalEnd); 
     }
 
     const addRoleClickHandler = () => {
