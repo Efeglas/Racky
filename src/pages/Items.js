@@ -149,7 +149,7 @@ const Items = () =>{
         const afterSuccess = () => {loadItems();}
         const generalEnd = () => {hideDeleteModal();}
 
-        customFetch("/item/delete", data, "DELETE", afterSuccess, generalEnd); 
+        customFetch("/item", data, "DELETE", afterSuccess, generalEnd); 
     }
 
     const saveEditOnClickHandler = async () => {
@@ -174,7 +174,7 @@ const Items = () =>{
         const afterSuccess = () => {loadItems();}
         const generalEnd = () => {hideEditModal();}
 
-        customFetch("/item/edit", data, "PATCH", afterSuccess, generalEnd);
+        customFetch("/item", data, "PATCH", afterSuccess, generalEnd);
     }
 
     const addOnClickHandler = async () => {
