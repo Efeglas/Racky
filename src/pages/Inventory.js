@@ -23,7 +23,7 @@ const Inventory = () => {
         });
         const json = await response.json();
         console.log(json);
-        setResultInventory(json.inventory);  
+        setResultInventory(json.data);  
     }
 
     const loadLayout = async () => {
@@ -38,7 +38,7 @@ const Inventory = () => {
             });
             const json = await response.json();
             console.log(json);    
-            setResultLayout(json.layout); 
+            setResultLayout(json.data); 
         }
     }
 
