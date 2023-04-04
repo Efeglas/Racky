@@ -427,7 +427,7 @@ const Layout = () => {
         const afterSuccess = () => {loadShelfs();}
         const generalEnd = () => {hideDeleteModal();}
 
-        customFetch("/layout/shelves/delete", data, "DELETE", afterSuccess, generalEnd); 
+        customFetch("/layout/shelves", data, "DELETE", afterSuccess, generalEnd); 
     }
 
     const saveNewNameForShelf = async () => {
@@ -447,7 +447,7 @@ const Layout = () => {
         const afterSuccess = () => {loadShelfs();}
         const generalEnd = () => {hideAddShelfModal();}
 
-        customFetch("/layout/shelves/edit", data, "PATCH", afterSuccess, generalEnd); 
+        customFetch("/layout/shelves", data, "PATCH", afterSuccess, generalEnd); 
     }
 
     const layoutClass = layoutHasError ? style.invalid : "";
