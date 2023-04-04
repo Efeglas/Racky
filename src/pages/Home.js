@@ -19,7 +19,7 @@ const Home = () => {
         });
         const json = await response.json();
         console.log(json); 
-        setResultHome(json);
+        setResultHome(json.data);
     }
 
     useEffect(() => {
