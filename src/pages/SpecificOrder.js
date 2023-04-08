@@ -232,7 +232,7 @@ const SpecificOrder = () => {
         const afterSuccess = () => {loadOrderItems();}
         const generalEnd = () => {hideAddModal();}
 
-        customFetch("/order/orderitem/edit", data, "PATCH", afterSuccess, generalEnd); 
+        customFetch("/order/orderitem", data, "PATCH", afterSuccess, generalEnd); 
     }
 
     const selectItemChangeHandler = (event) => {
@@ -265,7 +265,7 @@ const SpecificOrder = () => {
         const afterSuccess = () => {loadOrderItems();}
         const generalEnd = () => {hideDeleteModal();}
 
-        customFetch("/order/orderitem/delete", data, "DELETE", afterSuccess, generalEnd); 
+        customFetch("/order/orderitem", data, "DELETE", afterSuccess, generalEnd); 
     }
 
     const initDeleteOrderHandler = () => {
@@ -305,8 +305,8 @@ const SpecificOrder = () => {
         const json = await response.json();
         console.log(json);
 
-        if(json.error !== undefined && json.error.length > 0) {
-            setCloseErrorArray(json.error);
+        if(json.data.error !== undefined && json.data.error.length > 0) {
+            setCloseErrorArray(json.data.error);
             hideCloseModal();
             showErrorModal();
         } else {
