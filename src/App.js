@@ -19,6 +19,7 @@ import Items from "./pages/Items";
 import Inventory from "./pages/Inventory";
 import Order from "./pages/Order";
 import SpecificOrder from "./pages/SpecificOrder";
+import Statistics from "./pages/Statistics";
 
 const router = createBrowserRouter([
   {path: "/login", element: <Login />},
@@ -33,7 +34,8 @@ const router = createBrowserRouter([
     {path: "/items", element: <Items />},
     {path: "/inventory", element: <Inventory />},
     {path: "/order", element: <Order />},
-    {path: "/order/:id", element: <SpecificOrder />}
+    {path: "/order/:id", element: <SpecificOrder />},
+    {path: "/statistics", element: <Statistics />},    
   ]},
 ]);
 
