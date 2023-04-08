@@ -1,0 +1,75 @@
+.box {
+    margin-top: 10px;
+    background-color: white;
+    box-shadow: 0 0 1px rgba(0,0,0,.125),0 1px 3px rgba(0,0,0,.2);
+    border-radius: 4px;
+    width: 100%;
+    padding: 10px;
+}
+
+/* INPUT STYLES */
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+input:disabled {
+    background-color: rgb(233, 233, 233);
+}
+
+select:disabled {
+    background-color: rgb(233, 233, 233) !important;
+}
+
+.inputGroup label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.inputGroup input {
+    padding: 5px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    margin-bottom: 0;
+    height: 100%;
+}
+
+.inputGroup select {
+    padding: 5px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    margin-bottom: 0;
+    height: 100%;
+    background-color: white;
+}
+
+.inputGroup>p{
+    color: #e74c3c;
+    display: none;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.inputGroup.invalid>p{
+    display: block;
+}
+
+.inputGroup.invalid>label{
+    color: #e74c3c;
+}
+
+.inputGroup.invalid>input{
+    background-color: #f7b9b3;
+}
+
+.inputGroup.invalid>select{
+    background-color: #f7b9b3;
+}
+
+input:focus {
+    border-color: #2980b9;
+    outline: none;
+    border-radius: 4px;
+}
+/* INPUT STYLES END*/

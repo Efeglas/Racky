@@ -1,0 +1,109 @@
+.box {
+    background-color: white;
+    box-shadow: 0 0 1px rgba(0,0,0,.125),0 1px 3px rgba(0,0,0,.2);
+    border-radius: 4px;
+    width: 100%;
+    padding: 10px;
+}
+
+/* INPUT STYLES */
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.inputGroup label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.inputGroup input {
+    padding: 5px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.inputGroup>p{
+    color: #e74c3c;
+    display: none;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.inputGroup.invalid>p{
+    display: block;
+}
+
+.inputGroup.invalid>label{
+    color: #e74c3c;
+}
+
+.inputGroup.invalid>input{
+    background-color: #f7b9b3;
+}
+
+input:focus {
+    border-color: #2980b9;
+    outline: none;
+    border-radius: 4px;
+}
+/* INPUT STYLES END*/
+
+.fromTo{
+    display: flex;
+}
+
+.fromTo div{
+    margin-right: 5px;
+}
+
+/* FORMB UTTONS STYLES */
+.btn {
+    background-color: #2980b9;
+    color: white;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    margin-right: 4px;
+}
+
+.btn.btnDanger {
+    background-color: #e74c3c;
+    color: white;  
+}
+
+.btn.btnDanger:hover {
+    background-color: #f16151;
+}
+
+.btn.btnDefault {
+    background-color: #bdc3c7;
+    color: black;  
+}
+
+.btn.btnDefault:hover {
+    background-color: #ced4d8;
+}
+
+.btn.btnSuccess {
+    background-color: #27ae60;
+    color: white;  
+}
+
+.btn.btnSuccess:hover {
+    background-color: #2ebb69;
+}
+
+.btn:hover {
+    background-color: #4296ce;
+    cursor: pointer;
+}
+
+.formBtns {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+/* FORMB UTTONS STYLES END*/
