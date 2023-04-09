@@ -10,6 +10,7 @@ const TimerProvider = (props) => {
     const onLogoutHandler = () => {
         localStorage.clear();
         navigate('/login');
+        return;
     }
 
     const defaultTimerValue = 600;
@@ -24,16 +25,17 @@ const TimerProvider = (props) => {
         }
         document.addEventListener('click', onEveryClickOnDom);
 
+        if (seconds < 0) {
+            onLogoutHandler();
+        }
+
         return () => {
             clearInterval(intervalId);
             document.removeEventListener('click', onEveryClickOnDom);
         };
     }, [seconds]);
 
-    if (seconds < 0) {
-        onLogoutHandler();
-        return;
-    }
+    
 
     const tokenExpire = Number(localStorage.getItem("tokenExpire"));
     const actualTime = new Date();
