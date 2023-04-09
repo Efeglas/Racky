@@ -138,12 +138,10 @@ const OrderStat = () => {
                 <div className={`${style.inputGroup}`}>
                     <label>From</label>
                     <input type="date" value={fromEnteredValue} onInput={fromChangeHandler} onBlur={fromBlurHandler}/>
-                    <p>The field cannot be empty</p>
                 </div> 
                 <div className={`${style.inputGroup}`}>
                     <label>To</label>
                     <input type="date" value={toEnteredValue} onInput={toChangeHandler} onBlur={toBlurHandler}/>
-                    <p>The field cannot be empty</p>
                 </div>                     
             </div>
             <Bar options={options} data={data} />
