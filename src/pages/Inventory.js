@@ -22,7 +22,6 @@ const Inventory = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const json = await response.json();
-        console.log(json);
         setResultInventory(json.data);  
     }
 
@@ -37,14 +36,12 @@ const Inventory = () => {
                 body: JSON.stringify({token: localStorage.getItem("token"), layout: selectedInventory.Shelf.LayoutId}) 
             });
             const json = await response.json();
-            console.log(json);    
             setResultLayout(json.data); 
         }
     }
 
     const onInventoryClick = (inventory) => {
         setSelectedInventory(inventory);
-        console.log(selectedInventory)
     }
 
     useEffect(() => {

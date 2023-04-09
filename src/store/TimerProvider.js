@@ -39,7 +39,6 @@ const TimerProvider = (props) => {
 
     const tokenExpire = Number(localStorage.getItem("tokenExpire"));
     const actualTime = new Date();
-    //console.log(tokenExpire, actualTime.getTime());
     const refreshToken = async () => {
         const response = await fetch("http://192.168.50.62:8080/token", {
             method: "POST",

@@ -138,7 +138,6 @@ const Layout = () => {
             }) 
         });
         const json = await response.json();
-        console.log(json);
         setResultShelves(json.data);
     }
 
@@ -147,7 +146,6 @@ const Layout = () => {
     }
 
     const generateLayoutGrid = () => {
-        console.log("generateLayoutGrid");
         const temp = [];
         for (let i = 0; i < layoutHeight; i++) {
             const widthElementArray = [];
@@ -268,11 +266,9 @@ const Layout = () => {
 
     useEffect(() => {
         
-        if (isShelfPlacing && shelfCoords.length < 2) {
-            console.log(shelfCoords);
+        if (isShelfPlacing && shelfCoords.length < 2) {        
             
-        } else if (isShelfPlacing && shelfCoords.length >= 2) {
-            console.log(shelfCoords);
+        } else if (isShelfPlacing && shelfCoords.length >= 2) {        
             
             const coordsSorted = sortCoordsToShelf();
            
@@ -355,7 +351,6 @@ const Layout = () => {
             }) 
         });
         const json = await response.json();
-        console.log(json);
 
         setResultLayouts(json.data);
     }

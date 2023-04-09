@@ -6,7 +6,6 @@ import Loader from "../components/loader/Loader";
 const Profile = () => {
 
     const {userdata} = useLoaderData();
-    console.log(userdata);
     return (
         <Fragment>
                 <Suspense fallback={<Loader />}>
@@ -71,7 +70,6 @@ const loadUserData = async () => {
         return json({message: 'Could not fetch info from admins.'}, {status: 500});
     } else {
         const json = await response.json();
-        console.log(json);
         return json;
     } 
 }

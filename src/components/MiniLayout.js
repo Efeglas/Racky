@@ -78,7 +78,6 @@ const MiniLayout = (props) => {
                 shelfIndexes.push({x:x, y:props.shelf.y1});
             }
         }
-        console.log(shelfIndexes);
 
         const intervalId = setInterval(() => {     
             valami = !valami;

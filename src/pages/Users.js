@@ -98,7 +98,6 @@ const Users = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const json = await response.json();
-        console.log(json);
         setResultUsers(json.data);     
     }
 
@@ -112,7 +111,6 @@ const Users = () => {
                 body: JSON.stringify({token: localStorage.getItem("token")}) 
             });
             const json = await response.json();
-            console.log(json);
             setResultRoles(json.data);
     }
 
@@ -126,7 +124,6 @@ const Users = () => {
         setSelectedUser(user);
         setIsLocked(true);
         setIsEdit(true);
-        console.log(selectedUser);
         setSelectedRoleValue(user.Role.id);
         setUsername(user.username);
 

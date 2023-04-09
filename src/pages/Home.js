@@ -18,7 +18,6 @@ const Home = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const json = await response.json();
-        console.log(json); 
         setResultHome(json.data);
     }
 

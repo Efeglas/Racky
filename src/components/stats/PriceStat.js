@@ -81,7 +81,6 @@ const PriceStat = () => {
         if (selectedItemEnteredValue !== "0") {
             const response = await fetch(`http://192.168.50.62:8080/stat/prices?token=${localStorage.getItem("token")}&id=${selectedItemEnteredValue}`);
             const json = await response.json();
-            console.log(json);
             setResponse(json.data);
         }
     }
@@ -95,7 +94,6 @@ const PriceStat = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const jsonItems = await responseItems.json();
-        console.log(jsonItems);
         setItems(jsonItems.data);
     }
 

@@ -85,8 +85,6 @@ const OrderTable = (props) => {
         return false;
     });
 
-    console.log(filteredOrders);
-
     const ordersLength = filteredOrders.length;
     const divider = Math.ceil(ordersLength / 10);
     const pageFrom = ((pageState - 1) * 10) + 1;

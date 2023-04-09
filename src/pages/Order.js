@@ -22,7 +22,6 @@ const Order = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const json = await response.json();
-        console.log(json);
         setResultOrders(json.data); 
     }
 
@@ -36,7 +35,6 @@ const Order = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const json = await response.json();
-        console.log(json);
         navigate('/order/' + json.data.id);
         fireToast('Order created (IN)');      
     }
@@ -51,7 +49,6 @@ const Order = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const json = await response.json();
-        console.log(json);
         navigate('/order/' + json.data.id);
         fireToast('Order created (OUT)');        
     }

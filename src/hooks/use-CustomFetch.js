@@ -14,7 +14,6 @@ const useCustomFetch = () => {
             body: JSON.stringify(data)
         });
         const json = await response.json();
-        console.log(json);
 
         if (response.ok) {
             fireToast(json.message);

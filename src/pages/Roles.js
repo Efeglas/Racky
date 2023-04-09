@@ -31,7 +31,6 @@ const Roles = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const json = await response.json();
-        console.log(json);
         setPermissionData(json.data);
 
         const obj = {};
@@ -50,7 +49,6 @@ const Roles = () => {
                 body: JSON.stringify({token: localStorage.getItem("token")}) 
             });
             const json = await response.json();
-            console.log(json);
             setRoleData(json.data);
     }
 
@@ -91,7 +89,6 @@ const Roles = () => {
     const renameClickHandler = (role) => {
         setIsAddRole(false);
         setSelectedRole(role);
-        console.log(role.name);
         setRoleNameEnteredValue(role.name);
         showEditModal();
     }

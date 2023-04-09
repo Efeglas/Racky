@@ -109,7 +109,6 @@ const SpecificOrder = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const json = await response.json();
-        console.log(json);
 
         const responseItems = await fetch("http://192.168.50.62:8080/item/get", {
             method: "POST",
@@ -119,7 +118,6 @@ const SpecificOrder = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const jsonItems = await responseItems.json();
-        console.log(jsonItems);
 
         const responseShelves = await fetch("http://192.168.50.62:8080/layout/shelves/all", {
             method: "POST",
@@ -129,7 +127,6 @@ const SpecificOrder = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const jsonShelves = await responseShelves.json();
-        console.log(jsonShelves);
 
         setResultOrder(json.data); 
         setOrderItems(json.data.OrderItems);
@@ -152,7 +149,6 @@ const SpecificOrder = () => {
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const json = await response.json();
-        console.log(json);
         setOrderItems(json.data);
     }
 
@@ -303,7 +299,6 @@ const SpecificOrder = () => {
             }) 
         });
         const json = await response.json();
-        console.log(json);
 
         if(json.data.error !== undefined && json.data.error.length > 0) {
             setCloseErrorArray(json.data.error);
@@ -403,7 +398,6 @@ const SpecificOrder = () => {
         let shelfLevelOptions = [<option  key={0} value='0'>Choose a level...</option>];
      
         if (selectedShelfEnteredValue !== "0") {
-            console.log(selectedShelfEnteredValue, shelves[0].id);
             const shelfForLevel = shelves.find((shelf) => {                      
                 if (shelf.id == selectedShelfEnteredValue) {
                     return true;

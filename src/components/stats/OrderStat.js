@@ -106,7 +106,6 @@ const OrderStat = () => {
         if (fromEnteredValue !== "" && toEnteredValue !== "") {
             const response = await fetch(`http://192.168.50.62:8080/stat/orders?token=${localStorage.getItem("token")}&from=${fromEnteredValue}&to=${toEnteredValue}`);
             const json = await response.json();
-            console.log(json);
             setResponse(json.data);
         }
     }

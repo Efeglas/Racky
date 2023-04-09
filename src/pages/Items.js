@@ -87,7 +87,6 @@ const Items = () =>{
             body: JSON.stringify({token: localStorage.getItem("token")}) 
         });
         const json = await response.json();
-        console.log(json);
         setResultItems(json.data);     
     }
 
@@ -101,7 +100,6 @@ const Items = () =>{
                 body: JSON.stringify({token: localStorage.getItem("token")}) 
             });
             const json = await response.json();
-            console.log(json);
             setResultMeasures(json.data);
     }
 
@@ -116,7 +114,6 @@ const Items = () =>{
         setSelectedItem(item);
         setIsLocked(true);
         setIsEdit(true);
-        console.log(selectedItem);
         setmeasureEnteredValue(item.Measure.id);
         setbarcodeEnteredValue(item.barcode);
         setpriceEnteredValue(item.Prices[0].price);

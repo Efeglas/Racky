@@ -67,8 +67,6 @@ const InventoryTable = (props) => {
         return false;
     });
 
-    console.log(filteredInventory);
-
     const inventoryLength = filteredInventory.length;
     const divider = Math.ceil(inventoryLength / 10);
     const pageFrom = ((pageState - 1) * 10) + 1;

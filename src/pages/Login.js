@@ -48,7 +48,6 @@ const Login = () => {
             body: JSON.stringify({username: usernameEnteredValue, password: pwdEnteredValue}) 
         });
         const json = await response.json();
-        console.log(json);
         if (json.data !== undefined) {
 
             for (const key in json.data) {

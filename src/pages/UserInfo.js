@@ -33,7 +33,6 @@ const loadeAdmins = async () =>{
         return json({message: 'Could not fetch info from admins.'}, {status: 500});
     } else {
         const json = await response.json();
-        console.log(json);
         return json;
     } 
 } 

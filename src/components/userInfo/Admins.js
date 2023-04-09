@@ -4,8 +4,6 @@ import style from "./Admins.module.css";
 
 const Admins = (props) => {
 
-    console.log(props.admins.data[0].fullName);
-
     let jsx = props.admins.data.map((admin, index) => {
         return (
             <div key={index} className={style.admin}>
