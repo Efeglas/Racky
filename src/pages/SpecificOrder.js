@@ -356,7 +356,7 @@ const SpecificOrder = () => {
             showDeleteModal();
         }
 
-        let itemsJSX = <tr><td colSpan={7}></td></tr>;
+        let itemsJSX = <tr className={style.textCenter}><td colSpan={9}>No items available...</td></tr>;
         let sum = 0;
         if (orderItems.length > 0) {
             itemsJSX = orderItems.map((item) => {
