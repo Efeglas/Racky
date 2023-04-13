@@ -284,7 +284,8 @@ const Items = () =>{
     const editModal = (
         <Modal onClose={hideEditModal}>
             <div className={`${style.flex} ${style.flexSpaceBetw}`}>
-                <h3 className={style.mt0}>Edit item</h3>              
+                {isEdit && <h3 className={style.mt0}>Edit item</h3>}
+                {!isEdit && <h3 className={style.mt0}>Add item</h3>}         
             </div>
             <div className={`${style.inputGroup} ${itemNameClass}`}>
                 <label>Item name</label>
