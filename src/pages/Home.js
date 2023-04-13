@@ -35,8 +35,8 @@ const Home = () => {
             <h3 className={style.mt0}>Introduction</h3>
             <p>
                 Welcome to our warehouse management web application! Our application provides many features to fully manage 
-                your warehouse. You can plan multiple layouts with shelf placement. You can manage yout inventory. You can manage
-                inventory movement. There is a wide role and permission system built in so you can manipulate witch part of the application is 
+                your warehouse. You can plan multiple layouts with shelf placement. You can manage your inventory. You can manage
+                inventory movement and access statistics. There is a wide role and permission system built in so you can manipulate witch part of the application is 
                 accessable to users. 
             </p>
             <p>We hope you enjoy using our software!</p>
