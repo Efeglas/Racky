@@ -161,7 +161,7 @@ const Layout = () => {
             //? x2 y2
             setShelfColors((prevState) => {
                 let obj = {};
-                obj[shelf.id] = {r:getRndInteger(0,255), g:getRndInteger(0,255), b:getRndInteger(0,255)};
+                obj[shelf.id] = {r:75, g:139, b:132};
                 return {...prevState, ...obj }
             });
 
