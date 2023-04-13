@@ -290,3 +290,7 @@ input:focus {
     display: flex;
     align-items: center;
 }
+
+.textCenter {
+    text-align: center;
+}
